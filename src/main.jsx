@@ -8,6 +8,6 @@ import { Secant,Gaussian } from './methods.jsx'
 createRoot(document.getElementById('root')).render(
   <>
   <Secant f="log(sin(x)^2 + 1) - 1/2" tolerancestr="1e-7" iterationsstr="100" x0str="0.5" x1str="1" />
-  <Gaussian matrixA="1,2,3;4,5,6;7,8,9" matrixB="1,2,3" n="3" ></Gaussian>
+  <Gaussian matrixA="2,-1,0,3;1,0.5,3,8;0,13,-2,11;14,5,-2,3" matrixB="1,1,1,1" n="4" ></Gaussian>
   </>
 )
