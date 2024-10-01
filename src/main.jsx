@@ -1,9 +1,13 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Secant,Gaussian } from './methods.jsx'
 import { MultipleRoots } from './MultipleRoots.jsx'
 import { GaussianPartialPivoting } from './GaussianPartialPivoting.jsx'
 import { GaussianTotalPivoting } from './GaussianTotalPivoting.jsx'
+import { Gaussian } from './gaussian.jsx'
+import { Secant } from './secant.jsx'
+
+
+
 
 createRoot(document.getElementById('root')).render(
   <>
