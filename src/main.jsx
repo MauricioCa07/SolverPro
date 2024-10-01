@@ -1,7 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Secant,Gaussian } from './methods.jsx'
 import { MultipleRoots } from './MultipleRoots.jsx'
+import { Gaussian } from './gaussian.jsx'
+import { Secant } from './secant.jsx'
+
 
 
 
