@@ -80,5 +80,5 @@ export function Secant( {f,tolerancestr,iterationsstr,x0str,x1str} ){
 export function Gaussian({ matrixA, matrixB, n }) {
     const matrixAA = matrixA.split(';').map(row => row.split(',').map(Number));
     const matrixBB = matrixB.split(';').map(row => row.split(',').map(Number));
-    const nVar = parseInt(n,10) 
+    const nVar = parseInt(n,10)
 }
