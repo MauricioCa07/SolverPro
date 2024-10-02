@@ -1,0 +1,61 @@
+/*
+This algorithm implements the Gaussian elimination method with partial pivoting to solve
+systems of linear equations. It is an improved variant of the standard Gaussian elimination
+method that aims to minimize rounding errors and improve numerical stability.
+
+The Gaussian elimination method with partial pivoting follows these main steps:
+
+1. Pivot search: In each column, the element with the largest absolute value (pivot) is sought.
+2. Row exchange: The current row is swapped with the row containing the pivot.
+3. Elimination: The pivot is used to eliminate the elements below it in the column.
+4. Back-substitution: The resulting triangular system is solved.
+
+The formula for elimination in each step is:
+
+    a[i,j] = a[i,j] - (a[i,k] / a[k,k]) * a[k,j]
+
+Where:
+    a[i,j] is the element in row i, column j
+    k is the current pivot column
+
+Partial pivoting improves numerical stability by reducing the growth of rounding errors,
+especially in systems where coefficients vary significantly in magnitude.
+
+The computational complexity of the algorithm is O(n^3) for an n x n matrix.
+*/
+
+Function GaussianPartialPivoting(A, b, n)
+    // A is the coefficient matrix, b the vector of constants, n the number of variables
+    
+    Combine A and b into an augmented matrix M
+    
+    For k = 1 to n-1
+        // Find the maximum pivot in column k
+        max = |M[k,k]|
+        maxRow = k
+        For i = k+1 to n
+            If |M[i,k]| > max
+                max = |M[i,k]|
+                maxRow = i
+        
+        If max ≈ 0
+            Throw error "Singular matrix"
+        
+        // Swap rows k and maxRow
+        Swap M[k, *] with M[maxRow, *]
+        
+        // Elimination
+        For i = k+1 to n
+            factor = M[i,k] / M[k,k]
+            For j = k to n+1
+                M[i,j] = M[i,j] - factor * M[k,j]
+    
+    // Back-substitution
+    x = new vector of size n
+    For i = n to 1 (descending)
+        sum = 0
+        For j = i+1 to n
+            sum = sum + M[i,j] * x[j]
+        x[i] = (M[i,n+1] - sum) / M[i,i]
+    
+    Return x

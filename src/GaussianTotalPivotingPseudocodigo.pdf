@@ -1,0 +1,78 @@
+/*
+This algorithm implements the Gaussian elimination method with total pivoting to solve
+systems of linear equations. It is an even more robust variant than partial pivoting,
+offering the maximum possible numerical stability for the Gaussian elimination method.
+
+The Gaussian elimination method with total pivoting follows these main steps:
+
+1. Pivot search: In each iteration, the element with the largest absolute value in the
+   entire remaining submatrix is sought (not just in one column).
+2. Row and column exchange: Both the current row and column are swapped with those
+   containing the pivot.
+3. Elimination: The pivot is used to eliminate the elements below it in the column.
+4. Back-substitution: The resulting triangular system is solved.
+5. Reordering: The final solution is reordered according to the column exchanges made.
+
+The formula for elimination in each step is the same as in partial pivoting:
+
+    a[i,j] = a[i,j] - (a[i,k] / a[k,k]) * a[k,j]
+
+Where:
+    a[i,j] is the element in row i, column j
+    k is the current pivot row/column
+
+Advantages of total pivoting:
+1. Provides the maximum possible numerical stability for the Gaussian elimination method.
+2. Especially useful for ill-conditioned or nearly singular matrices.
+3. Guarantees that the pivot at each step is the largest element in absolute value in the submatrix.
+
+Disadvantages:
+1. Higher computational cost due to searching for the pivot in the entire submatrix.
+2. Requires additional tracking to reorder the final solution.
+
+The computational complexity of the algorithm is O(n^3) for an n x n matrix, but with a
+larger constant than partial pivoting due to the more exhaustive pivot search.
+*/
+
+Function GaussianTotalPivoting(A, b, n)
+    // A is the coefficient matrix, b the vector of constants, n the number of variables
+    
+    Combine A and b into an augmented matrix M
+    
+    For k = 1 to n-1
+        // Find the maximum pivot in the entire submatrix
+        max = 0
+        For i = k to n
+            For j = k to n
+                If |M[i,j]| > max
+                    max = |M[i,j]|
+                    maxRow = i
+                    maxCol = j
+        
+        If max ≈ 0
+            Throw error "Singular matrix"
+        
+        // Swap rows k and maxRow
+        Swap M[k, *] with M[maxRow, *]
+        
+        // Swap columns k and maxCol
+        Swap M[*, k] with M[*, maxCol]
+        Record this swap to reorder the final solution
+        
+        // Elimination
+        For i = k+1 to n
+            factor = M[i,k] / M[k,k]
+            For j = k to n+1
+                M[i,j] = M[i,j] - factor * M[k,j]
+    
+    // Back-substitution
+    x = new vector of size n
+    For i = n to 1 (descending)
+        sum = 0
+        For j = i+1 to n
+            sum = sum + M[i,j] * x[j]
+        x[i] = (M[i,n+1] - sum) / M[i,i]
+    
+    Reorder x according to the recorded column swaps
+    
+    Return x

@@ -1,0 +1,49 @@
+/*
+This algorithm implements the Multiple Roots method, also known as the Euler-Chebyshev method.
+It is an advanced numerical technique for finding roots of nonlinear functions, especially
+effective for multiple roots. The method combines features of the Newton-Raphson method and
+the Halley method, using the first and second derivatives of the function to accelerate convergence.
+
+The iterative formula of the Multiple Roots method is:
+
+    x_(n+1) = x_n - (f(x_n) * f'(x_n)) / (f'(x_n)^2 - f(x_n) * f''(x_n))
+
+Where:
+    x_n is the current approximation of the root
+    f(x_n) is the function value at x_n
+    f'(x_n) is the first derivative value at x_n
+    f''(x_n) is the second derivative value at x_n
+
+The method is particularly useful when a function is suspected to have multiple roots,
+as it converges faster than Newton's method in these cases. For a root of multiplicity m,
+the convergence is of order m+1, compared to order m-1 for Newton's method.
+
+The stopping criterion uses the tolerance ε as follows:
+    |x_(n+1) - x_n| < ε   or   |f(x_(n+1))| < ε
+
+However, it requires the calculation of the second derivative, which can be computationally more expensive.
+*/
+
+Function MultipleRoots(f, f', f'', x0, tolerance, maxIterations)
+    // f is the function, f' its first derivative, f'' its second derivative
+    // x0 is the initial point, tolerance is the maximum acceptable error
+    
+    If |f(x0)| < tolerance
+        Return x0 // x0 is already a root
+    
+    n = 0
+    While n < maxIterations
+        fx = f(x0)
+        fx' = f'(x0)
+        fx'' = f''(x0)
+        
+        // Multiple Roots method formula
+        x1 = x0 - (fx * fx') / (fx'^2 - fx * fx'')
+        
+        If |x1 - x0| < tolerance or |f(x1)| < tolerance
+            Return x1 // Convergence achieved
+        
+        x0 = x1
+        n = n + 1
+    
+    Throw error "Maximum iterations reached without convergence"
