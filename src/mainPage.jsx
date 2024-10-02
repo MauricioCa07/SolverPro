@@ -4,9 +4,9 @@ import { Gaussian } from './gaussian.jsx';
 import { MultipleRoots } from './MultipleRoots.jsx';
 import { GaussianPartialPivoting } from './GaussianPartialPivoting.jsx';
 import { GaussianTotalPivoting } from './GaussianTotalPivoting.jsx';
-import { search } from './search.jsx';
-import { bisection } from './bisection.jsx';
-import { falserule } from './falserule.jsx';
+import { Search } from './search.jsx';
+import { Bisection } from './bisection.jsx';
+import { Falserule } from './falserule.jsx';
 
 const MainPage = () => {
     const [selectedMethod, setSelectedMethod] = useState(null);
@@ -24,11 +24,11 @@ const MainPage = () => {
             case 'GaussianTotalPivoting':
                 return  <GaussianTotalPivoting matrixA="4,-2,1;-2,4,-2;1,-2,4" vectorB="11,-16,17" n="3"></GaussianTotalPivoting>
             case 'search':
-                return <search f="x*x-4" x0string ="0" hstring="3" Nmaxstring="100"/>;
+                return <Search f="x*x-4" x0string ="0" hstring="3" Nmaxstring="100"/>;
             case 'bisection':
-                return <bisection f="x*x-4" astring="1" bstring="3" tolstring="1e-7" Nmaxstring="100"/>
+                return <Bisection f="x*x-4" astring="1" bstring="3" tolstring="1e-7" Nmaxstring="100"/>
             case 'falserule':
-                return <falserule f="x*x-4" astring="1" bstring="3" tolstring="1e-7" Nmaxstring="100"/>
+                return <Falserule f="x*x-4" astring="1" bstring="3" tolstring="1e-7" Nmaxstring="100"/>
             default:
                 return <h2>Selecciona un método</h2>;
         }

@@ -5,7 +5,7 @@ function f(func, x) {
     return math.evaluate(func, { x });
 }
 
-export function falserule({f:func, astring, bstring, tolstring, Nmaxstring}){
+export function Falserule({f:func, astring, bstring, tolstring, Nmaxstring}){
     const a = parseFloat(astring, 10);
     const b = parseFloat(bstring, 10);
     const tol = parseFloat(tolstring, 10);

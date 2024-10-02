@@ -5,7 +5,7 @@ function f(func, x) {
     return math.evaluate(func, { x });
 }
 
-export function search({f: func, x0string, hstring, Nmaxstring}){
+export function Search({f: func, x0string, hstring, Nmaxstring}){
     const x0 = parseFloat(x0string, 10);
     const h = parseFloat(hstring, 10);
     const Nmax = parseFloat(Nmaxstring, 10);
