@@ -75,4 +75,4 @@ Function GaussianTotalPivoting(A, b, n)
     
     Reorder x according to the recorded column swaps
     
-    Return x
+    Return x 
