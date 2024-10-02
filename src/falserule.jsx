@@ -5,32 +5,34 @@ function f(func, x) {
     return math.evaluate(func, { x });
 }
 
-export function Falserule({f:func, astring, bstring, tolstring, Nmaxstring}){
-    const a = parseFloat(astring, 10);
-    const b = parseFloat(bstring, 10);
+export function Falserule({ f: func, astring, bstring, tolstring, Nmaxstring }) {
+    let a = parseFloat(astring, 10); 
+    let b = parseFloat(bstring, 10); 
     const tol = parseFloat(tolstring, 10);
     const Nmax = parseInt(Nmaxstring, 10);
 
-    const fa = f(func, a);
-    const fb = f(func, b);
-    const pm = (fb*a-fa*b)/(fb-fa);
-    const fpm = f(func, pm);
-    const E = 1000;
-    const cont = 1;
+    let fa = f(func, a); 
+    let fb = f(func, b); 
+    let pm = (fb * a - fa * b) / (fb - fa); 
+    let fpm = f(func, pm); 
+    let E = 1000; 
+    let cont = 1; 
 
     while (E > tol && cont < Nmax) {
-        if (fa * fpm < 0) {     //Si hay cambio de signo en la primera parte del intervalo se reasigna el límite superior
-            b = pm;
-          } else {
-            a = pm;     //De lo contrario, se reasigna el límite inferior
-          }
-      
-          let p0 = pm;      //Guardar la aproximación
-          pm = (f(b)*a-f(a)*b)/(f(b)-f(a));     //Calcular el nuevo punto medio
-          fpm = f(pm);
-          E = Math.abs(pm - p0);    //Calcular el error
+        if (fa * fpm < 0) {
+            b = pm; 
+            fb = fpm; 
+        } else {
+            a = pm; 
+            fa = fpm; 
+        }
 
-          cont++;
+        let p0 = pm; 
+        pm = (fb * a - fa * b) / (fb - fa); 
+        fpm = f(func, pm); 
+        E = Math.abs(pm - p0); 
+
+        cont++;
     }
 
     return <h1>Root found at: {pm} in {cont} iterations with an error of {E}</h1>;

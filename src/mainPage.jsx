@@ -7,6 +7,11 @@ import { GaussianTotalPivoting } from './GaussianTotalPivoting.jsx';
 import { Search } from './search.jsx';
 import { Bisection } from './bisection.jsx';
 import { Falserule } from './falserule.jsx';
+import { Newton } from './Newton.jsx';
+import { FixedPoint } from './FixedPoint.jsx';
+
+
+
 
 const MainPage = () => {
     const [selectedMethod, setSelectedMethod] = useState(null);
@@ -23,29 +28,35 @@ const MainPage = () => {
                 return <GaussianPartialPivoting matrixA="4,-2,1;-2,4,-2;1,-2,4" vectorB="11,-16,17" n="3"></GaussianPartialPivoting>
             case 'GaussianTotalPivoting':
                 return  <GaussianTotalPivoting matrixA="4,-2,1;-2,4,-2;1,-2,4" vectorB="11,-16,17" n="3"></GaussianTotalPivoting>
-            case 'search':
+            case 'Search':
                 return <Search f="x*x-4" x0string ="0" hstring="3" Nmaxstring="100"/>;
-            case 'bisection':
+            case 'Bisection':
                 return <Bisection f="x*x-4" astring="1" bstring="3" tolstring="1e-7" Nmaxstring="100"/>
-            case 'falserule':
+            case 'Falserule':
                 return <Falserule f="x*x-4" astring="1" bstring="3" tolstring="1e-7" Nmaxstring="100"/>
+            case 'Newton':
+                return <Newton fx="log(x)-1" dfx="1/x" x0="2.5" tol="10e-7" />
+            case 'FixedPoint':
+                return <FixedPoint fx="3x-exp(-2x)" gx="exp(-2x)/3" x0="0.1" tol="10e-7" />
             default:
-                return <h2>Selecciona un método</h2>;
+                return <h2>Choose a method</h2>;
         }
     };
 
     return (
         <div>
-            <h1>Calculadora de Métodos Numéricos</h1>
+            <h1>Numeric methods</h1>
             <div>
                 <button onClick={() => setSelectedMethod('secant')}>secant </button>
                 <button onClick={() => setSelectedMethod('gaussian')}> gaussian </button>
                 <button onClick={() => setSelectedMethod('multipleRoots')}>multiple Roots</button>
                 <button onClick={() => setSelectedMethod('GaussianPartialPivoting')}>Gaussian Partial Pivoting</button>
                 <button onClick={() => setSelectedMethod('GaussianTotalPivoting')}>Gaussian Total Pivoting</button>
-                <button onClick={() => setSelectedMethod('search')}>Incremental searches</button>
-                <button onClick={() => setSelectedMethod('bisection')}>Bisection</button>
-                <button onClick={() => setSelectedMethod('falserule')}>False position rule</button>
+                <button onClick={() => setSelectedMethod('Search')}>Incremental searches</button>
+                <button onClick={() => setSelectedMethod('Bisection')}>Bisection</button>
+                <button onClick={() => setSelectedMethod('Falserule')}>False rule</button>
+                <button onClick={() => setSelectedMethod('Newton')}>Newton</button>
+                <button onClick={() => setSelectedMethod('FixedPoint')}> FixedPoint </button>
             </div>
             <div>
                 {renderMethod()}

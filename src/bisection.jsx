@@ -5,31 +5,31 @@ function f(func, x) {
     return math.evaluate(func, { x });
 }
 
-export function Bisection({f:func, astring, bstring, tolstring, Nmaxstring}){
-    const a = parseFloat(astring, 10);
-    const b = parseFloat(bstring, 10);
-    const tol = parseFloat(tolstring, 10);
-    const Nmax = parseInt(Nmaxstring, 10);
-
-    const fa = f(func, a);
-    const pm = (a+b)/2;
-    const fpm = f(func, pm);
-    const E = 1000;
-    const cont = 1;
+export function Bisection({ f: func, astring, bstring, tolstring, Nmaxstring }) {
+    let a = parseFloat(astring, 10);
+    let b = parseFloat(bstring, 10);
+    let tol = parseFloat(tolstring, 10);
+    let Nmax = parseInt(Nmaxstring, 10);
+    let fa = f(func, a); 
+    let pm = (a + b) / 2;
+    let fpm = f(func, pm);
+    let E = 1000;
+    let cont = 1;
 
     while (E > tol && cont < Nmax) {
         if (fa * fpm < 0) {
-          b = pm;
+            b = pm;
         } else {
-          a = pm;
+            a = pm;
+            fa = fpm; // Update fa when assigning new a
         }
-    
+
         let p0 = pm;
         pm = (a + b) / 2;
-        fpm = f(pm);
+        fpm = f(func, pm);
         E = Math.abs(pm - p0);
         cont++;
-      }
+    }
 
-      return <h1>Root found at: {pm} in {cont} iterations with an error of {E}</h1>;
+    return <h1>Root found at: {pm} in {cont} iterations with an error of {E}</h1>;
 }

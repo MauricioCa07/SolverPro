@@ -42,11 +42,11 @@ export function Newton({ fx, dfx, x0, tol=10e-7}) {
                 throw Error("xi is not define in the domain")
             }
             if(fxi == 0) {
-                setResult(`Root is at ${xi}`);
+                setResult(`The root is approximately ${xi} in iteration ${counter} with an error of ${error}`);
                 break;
             }
             else if(error <= tol){
-                setResult(`The root is approximately ${xi}`);
+                setResult(`The root is approximately ${xi} in iteration ${counter} with an error of ${error}`);
                 break;
             }
             else if(counter === limitCount){

@@ -35,8 +35,6 @@ export function Gaussian({ matrixA, matrixB, n }) {
                 }
                 X[i] = (M[i][n] - sum) / M[i][i];
             }
-
-            // Establecer el resultado en el estado
             setResult(X);
         };
 
@@ -45,7 +43,7 @@ export function Gaussian({ matrixA, matrixB, n }) {
         const nVar = parseInt(n, 10);
         
         gaussian(matrixAA, matrixBB, nVar);
-    }, [matrixA, matrixB, n]); // Dependencias para ejecutar useEffect
+    }, [matrixA, matrixB, n]); 
 
     return (
         <div>
