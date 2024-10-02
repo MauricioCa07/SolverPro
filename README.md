@@ -1,8 +1,26 @@
-# React + Vite
+# UNIVERSIDAD EAFIT
+## DEPARTAMENTO DE INFORMATICA Y SISTEMAS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### PROJECT SELECTION
+**First Report**  
+**Objective:** Adequately define the potential project to be developed during the semester.  
+**Course:** Numerical Analysis  
+**Responsible Professor:** Edwar Samir Posada Murillo  
+**Submission Date:** 04/08/2024  
 
-Currently, two official plugins are available:
+### Project Name: SolverPro  
+**Project Web Address (or indicate the repository you will be working from):**  
+[https://github.com/MauricioCa07/SolverPro.git](https://github.com/MauricioCa07/SolverPro.git)  
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Team Members:
+- Mauricio Carrillo Carvajal
+- Sebastian Cano
+- Manuel
+- Juan Diego Llorente
+
+### Project Description:
+SolverPro is an online calculator that provides access to various numerical methods, offering a wide catalog so you can choose the method that best suits your project. Designed for students, engineers, and professionals, SolverPro simplifies the process of solving complex math problems efficiently and accurately, featuring an intuitive interface and real-time results.
+
+### Possible Added Values:
+- English
+- LaTeX
