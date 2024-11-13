@@ -4,15 +4,15 @@ import CholeskyDecomposition from './cholesky';
 import JacobiMethod from './jacobi';
 import NewtonDividedDifferences from './newton_diferencias_divididas';
 import CompositeSimpson from './simpson';
-import Secant from './secant';
-import Gaussian from './gaussian';
-import MultipleRoots from './MultipleRoots';
-import GaussianPartialPivoting from './GaussianPartialPivoting';
-import GaussianTotalPivoting from './GaussianTotalPivoting';
-import Search from './search';
-import Bisection from './bisection';
-import Falserule from './falserule';
-import FixedPoint from './FixedPoint';
+import {Secant} from './secant';
+import {Gaussian} from './gaussian';
+import {MultipleRoots} from './MultipleRoots';
+import {GaussianPartialPivoting} from './GaussianPartialPivoting';
+import {GaussianTotalPivoting} from './GaussianTotalPivoting';
+import {Search} from './search';
+import {Bisection} from './bisection';
+import {Falserule} from './falserule';
+import {FixedPoint} from './FixedPoint';
 import SOR from './SOR';
 
 const MainPage = () => {
@@ -20,7 +20,17 @@ const MainPage = () => {
 
   const renderMethod = () => {
     switch (selectedMethod) {
-      case "secant":
+      case "LU":
+        return <LUDecomposition/>;
+      case "Cholesky":
+        return <CholeskyDecomposition/>;
+      case "Jacobi":
+        return <JacobiMethod/>
+      case "NewtonDivided":
+        return <NewtonDividedDifferences/>
+      case "Simpson":
+        return <CompositeSimpson/>
+      case "Secant":
         return (
           <Secant
             f="log(sin(x)^2 + 1) - 1/2"
@@ -30,7 +40,7 @@ const MainPage = () => {
             x1str="1"
           />
         );
-      case "gaussian":
+      case "Gaussian":
         return (
           <Gaussian
             matrixA="2,-1,0,3;1,0.5,3,8;0,13,-2,11;14,5,-2,3"
@@ -38,7 +48,7 @@ const MainPage = () => {
             n="4"
           />
         );
-      case "multipleRoots":
+      case "MultipleRoots":
         return (
           <MultipleRoots
             funct="log(sin(x)^2 + 1) - 1/2"
@@ -68,7 +78,7 @@ const MainPage = () => {
       case "Search":
         return <Search f="x*x-4" x0string="0" hstring="3" Nmaxstring="100" />;
       case 'Bisection':
-        return <Bisection f="x*x-4" astring="1" bstring="3" tolstring="1e-7" Nmaxstring="100" />;
+        return <Bisection f="2x+4sin(x)^2+3" astring="-4" bstring="-2" tolstring="1e-7" Nmaxstring="100" />;
       case 'Falserule':
         return <Falserule f="x*x-4" astring="1" bstring="3" tolstring="1e-7" Nmaxstring="100" />;
       case 'FixedPoint':
@@ -96,7 +106,7 @@ const MainPage = () => {
         <button onClick={() => setSelectedMethod('LU')}>LU Decomposition</button>
         <button onClick={() => setSelectedMethod('Cholesky')}>Cholesky Decomposition</button>
         <button onClick={() => setSelectedMethod('Jacobi')}>Jacobi Method</button>
-        <button onClick={() => setSelectedMethod('Newton')}>Newton's Divided Differences</button>
+        <button onClick={() => setSelectedMethod('NewtonDivided')}>Newton's Divided Differences</button>
         <button onClick={() => setSelectedMethod('Simpson')}>Composite Simpson's 1/3 Rule</button>
         <button onClick={() => setSelectedMethod('Secant')}>Secant Method</button>
         <button onClick={() => setSelectedMethod('Gaussian')}>Gaussian Elimination</button>
