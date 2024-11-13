@@ -13,6 +13,7 @@ import Search from './search';
 import Bisection from './bisection';
 import Falserule from './falserule';
 import FixedPoint from './FixedPoint';
+import SOR from './SOR';
 
 const MainPage = () => {
   const [selectedMethod, setSelectedMethod] = useState(null);
@@ -47,6 +48,17 @@ const MainPage = () => {
         return <Falserule f="x*x-4" astring="1" bstring="3" tolstring="1e-7" Nmaxstring="100" />;
       case 'FixedPoint':
         return <FixedPoint fx="3x-exp(-2x)" gx="exp(-2x)/3" x0="0.1" tol="10e-7" />;
+      case 'SOR':
+        return (
+          <SOR
+            matrixA="4,-1,0; -1,4,-1; 0,-1,3"
+            vectorB="15,10,10"
+            x0str="0,0,0"
+            wstr="1.25"
+            tolstr="1e-5"
+            Nmaxstr="100"
+          />
+        );
       default:
         return <h2>Choose a method</h2>;
     }
@@ -70,6 +82,7 @@ const MainPage = () => {
         <button onClick={() => setSelectedMethod('Bisection')}>Bisection</button>
         <button onClick={() => setSelectedMethod('Falserule')}>False Rule</button>
         <button onClick={() => setSelectedMethod('FixedPoint')}>Fixed Point</button>
+        <button onClick={() => setSelectedMethod('SOR')}>SOR Method</button>
       </div>
       <div>{renderMethod()}</div>
     </div>
