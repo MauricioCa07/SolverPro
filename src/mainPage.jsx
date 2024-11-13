@@ -14,12 +14,20 @@ import {Bisection} from './bisection';
 import {Falserule} from './falserule';
 import {FixedPoint} from './FixedPoint';
 import SOR from './SOR';
+import {PartialLU} from './LUparcial';
 
 const MainPage = () => {
   const [selectedMethod, setSelectedMethod] = useState(null);
 
   const renderMethod = () => {
     switch (selectedMethod) {
+      case "LUparcial":
+        return <PartialLU A={[
+          [2, 3, 1],
+          [5, 7, 1],
+          [-2, 4, -1],
+        ]}
+        b={[5, 10, -3]}/>
       case "LU":
         return <LUDecomposition/>;
       case "Cholesky":
@@ -118,6 +126,7 @@ const MainPage = () => {
         <button onClick={() => setSelectedMethod('Falserule')}>False Rule</button>
         <button onClick={() => setSelectedMethod('FixedPoint')}>Fixed Point</button>
         <button onClick={() => setSelectedMethod('SOR')}>SOR Method</button>
+        <button onClick={() => setSelectedMethod('LUparcial')}>Partial-pivoting LU</button>
       </div>
       <div>{renderMethod()}</div>
     </div>
