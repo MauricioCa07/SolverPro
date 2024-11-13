@@ -9,6 +9,7 @@ import { Bisection } from './bisection.jsx';
 import { Falserule } from './falserule.jsx';
 import { Newton } from './Newton.jsx';
 import { FixedPoint } from './FixedPoint.jsx';
+import { PartialLU } from './LUparcial.jsx';
 
 
 
@@ -37,7 +38,12 @@ const MainPage = () => {
             case 'Newton':
                 return <Newton fx="log(x)-1" dfx="1/x" x0="2.5" tol="10e-7" />
             case 'FixedPoint':
-                return <FixedPoint fx="3x-exp(-2x)" gx="exp(-2x)/3" x0="0.1" tol="10e-7" />
+                return <FixedPoint fx="3x-exp(-2x)" gx="exp(-2x)/3" x0="0.1" tol="10e-7" />;
+            case 'PartialLU':
+                return <PartialLU A={[[2, 3, 1], [5, 7, 1], [-2, 4, -1]]} b={[5, 10, -3]} />;
+                
+                
+                
             default:
                 return <h2>Choose a method</h2>;
         }
@@ -57,6 +63,7 @@ const MainPage = () => {
                 <button onClick={() => setSelectedMethod('Falserule')}>False rule</button>
                 <button onClick={() => setSelectedMethod('Newton')}>Newton</button>
                 <button onClick={() => setSelectedMethod('FixedPoint')}> FixedPoint </button>
+                <button onClick={() => setSelectedMethod('PartialLU')}> PartialLU </button>
             </div>
             <div>
                 {renderMethod()}
