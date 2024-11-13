@@ -15,12 +15,20 @@ import {Falserule} from './falserule';
 import {FixedPoint} from './FixedPoint';
 import SOR from './SOR';
 import {PartialLU} from './LUparcial';
+import {CroutDecomposition} from './Crout';
 
 const MainPage = () => {
   const [selectedMethod, setSelectedMethod] = useState(null);
 
   const renderMethod = () => {
     switch (selectedMethod) {
+      case "Crout":
+        return <CroutDecomposition A={[
+          [2, 3, 1],
+          [5, 7, 1],
+          [-2, 4, -1],
+        ]}
+        b={[5, 10, -3]}/>
       case "LUparcial":
         return <PartialLU A={[
           [2, 3, 1],
@@ -127,6 +135,7 @@ const MainPage = () => {
         <button onClick={() => setSelectedMethod('FixedPoint')}>Fixed Point</button>
         <button onClick={() => setSelectedMethod('SOR')}>SOR Method</button>
         <button onClick={() => setSelectedMethod('LUparcial')}>Partial-pivoting LU</button>
+        <button onClick={() => setSelectedMethod('Crout')}>Crout</button>
       </div>
       <div>{renderMethod()}</div>
     </div>
