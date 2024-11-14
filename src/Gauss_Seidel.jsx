@@ -3,6 +3,22 @@ import { create, all } from 'mathjs';
 
 const math = create(all);
 
+// Función para obtener la matriz triangular inferior
+function tril(matrix) {
+    const n = matrix.length;
+    return matrix.map((row, i) =>
+        row.map((val, j) => (i >= j ? val : 0))
+    );
+}
+
+// Función para obtener la matriz triangular superior
+function triu(matrix) {
+    const n = matrix.length;
+    return matrix.map((row, i) =>
+        row.map((val, j) => (i <= j ? val : 0))
+    );
+}
+
 export function GaussSeidel({ A, b, x0, tol, Nmax }) {
     const [result, setResult] = useState(null);
 
@@ -15,8 +31,8 @@ export function GaussSeidel({ A, b, x0, tol, Nmax }) {
 
         // Descomposición de A en D, L y U
         const D = math.diag(math.diag(A));
-        const L = math.subtract(math.multiply(-1, math.tril(A)), D);
-        const U = math.subtract(math.multiply(-1, math.triu(A)), D);
+        const L = math.subtract(math.multiply(-1, tril(A)), D);
+        const U = math.subtract(math.multiply(-1, triu(A)), D);
         
         // Calcula T y C
         const DL_inv = math.inv(math.add(D, L));
@@ -56,4 +72,4 @@ export function GaussSeidel({ A, b, x0, tol, Nmax }) {
     );
 }
 
-export default gaussSeidel;
+export default GaussSeidel;

@@ -16,12 +16,24 @@ import {FixedPoint} from './FixedPoint';
 import SOR from './SOR';
 import {PartialLU} from './LUparcial';
 import {CroutDecomposition} from './Crout';
+import GaussSeidel from './Gauss_Seidel';
 
 const MainPage = () => {
   const [selectedMethod, setSelectedMethod] = useState(null);
 
   const renderMethod = () => {
     switch (selectedMethod) {
+      case "GaussSeidel":
+        return <GaussSeidel A={[
+          [4, -1, 0, 0],
+          [-1, 4, -1, 0],
+          [0, -1, 4, -1],
+          [0, 0, -1, 3]
+      ]} 
+      b={[15, 10, 10, 10]} 
+      x0={[0, 0, 0, 0]} 
+      tol={1e-7} 
+      Nmax={100}/>
       case "Crout":
         return <CroutDecomposition A={[
           [2, 3, 1],
@@ -136,6 +148,7 @@ const MainPage = () => {
         <button onClick={() => setSelectedMethod('SOR')}>SOR Method</button>
         <button onClick={() => setSelectedMethod('LUparcial')}>Partial-pivoting LU</button>
         <button onClick={() => setSelectedMethod('Crout')}>Crout</button>
+        <button onClick={() => setSelectedMethod('GaussSeidel')}>Gauss-Seidel</button>
       </div>
       <div>{renderMethod()}</div>
     </div>
