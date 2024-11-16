@@ -17,6 +17,7 @@ import SOR from './SOR';
 import {PartialLU} from './LUparcial';
 import {CroutDecomposition} from './Crout';
 import GaussSeidel from './Gauss_Seidel';
+import LagrangeInterpolation from './Lagrange';
 
 const MainPage = () => {
   const [selectedMethod, setSelectedMethod] = useState(null);
@@ -122,6 +123,8 @@ const MainPage = () => {
             Nmaxstr="100"
           />
         );
+      case 'Lagrange':
+        return <LagrangeInterpolation X = {[1, 2, 3]} Y={[2, 3, 5]}/>;
       default:
         return <h2>Choose a method</h2>;
     }
@@ -149,6 +152,7 @@ const MainPage = () => {
         <button onClick={() => setSelectedMethod('LUparcial')}>Partial-pivoting LU</button>
         <button onClick={() => setSelectedMethod('Crout')}>Crout</button>
         <button onClick={() => setSelectedMethod('GaussSeidel')}>Gauss-Seidel</button>
+        <button onClick={() => setSelectedMethod('Lagrange')}>Interpolating polynomial with Lagrange's method</button>
       </div>
       <div>{renderMethod()}</div>
     </div>
