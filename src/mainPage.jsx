@@ -18,6 +18,7 @@ import { PartialLU } from "./LUparcial";
 import { CroutDecomposition } from "./Crout";
 import GaussSeidel from "./Gauss_Seidel";
 import LagrangeInterpolation from "./Lagrange";
+import Euler from "./Euler";
 
 const MainPage = () => {
   const [selectedMethod, setSelectedMethod] = useState(null);
@@ -155,6 +156,8 @@ const MainPage = () => {
         );
       case "Lagrange":
         return <LagrangeInterpolation X={[1, 2, 3]} Y={[2, 3, 5]} />;
+      case "Euler":
+        return <Euler f="x-y" x0="0" y0="1" xFinal="2" h="0.1"/>;
       default:
         return <h2>Choose a method</h2>;
     }
@@ -216,6 +219,9 @@ const MainPage = () => {
         </button>
         <button onClick={() => setSelectedMethod("Lagrange")}>
           Interpolating polynomial with Lagrange's method
+        </button>
+        <button onClick={() => setSelectedMethod("Euler")}>
+          Euler's method for differential equations
         </button>
       </div>
       <div>{renderMethod()}</div>
