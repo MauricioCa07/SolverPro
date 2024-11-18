@@ -26,13 +26,13 @@ function Navbar() {
         <div>
           <ul id="navbar">
             <li>
-              <Link to={"/"}>Inicio</Link>
+              <Link to={"/"}>Home</Link>
             </li>
             <li>
-              <a>Métodos</a>
+              <a>Methods</a>
             </li>
             <li>
-              <Link to={"/tutorials"}>Tutoriales</Link>
+              <Link to={"/tutorials"}>Tutorials</Link>
             </li>
           </ul>
         </div>

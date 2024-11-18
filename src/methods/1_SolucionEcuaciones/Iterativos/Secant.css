@@ -1,0 +1,23 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  height: 500px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.text-Method {
+  padding-left: 75px;
+  font-weight: bold;
+}
+
+.item {
+  flex: 1 0 40%;
+  margin: 10px;
+  padding: 50px;
+  padding-left: 300px;
+}
+
+.form-control {
+  text-align: center;
+}

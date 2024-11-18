@@ -37,6 +37,12 @@ export function Home() {
           title="Secante"
           description="Método iterativo que utiliza aproximaciones secantes en lugar de derivadas para encontrar la raíz."
           img="assets/Secante.jpg"
+          route="/Secant"
+        />
+        <Card
+          title="Búsqueda"
+          description="Método para localizar el máximo o mínimo de una función en un intervalo definido."
+          img="assets/Busqueda.jpg"
         />
       </div>
 
@@ -114,15 +120,6 @@ export function Home() {
           title="Euler"
           description="Método de paso simple para aproximar soluciones de ecuaciones diferenciales ordinarias."
           img="assets/Euler.jpg"
-        />
-      </div>
-
-      <h1 className="text">Búsqueda y Optimización</h1>
-      <div className="card-container">
-        <Card
-          title="Búsqueda"
-          description="Método para localizar el máximo o mínimo de una función en un intervalo definido."
-          img="assets/Busqueda.jpg"
         />
       </div>
     </>
