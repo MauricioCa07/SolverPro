@@ -12,6 +12,7 @@ export function Home() {
           title="Bisección"
           description="Método para encontrar raíces dividiendo un intervalo en dos mitades y seleccionando la que contiene el cambio de signo."
           img="assets/Bisección.jpg"
+          route="/biseccion"
         />
         <Card
           title="Regla Falsa"

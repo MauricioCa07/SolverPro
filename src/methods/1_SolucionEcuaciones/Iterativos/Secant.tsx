@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { create, all } from "mathjs";
 import Navbar from "../../../components/Navbar";
 import "./Secant.css";
-import React from "react";
 
 const math = create(all);
 
@@ -16,99 +15,105 @@ export function Secant() {
 }
 
 function MathForm() {
-  const [functionValue, setFunctionValue] = useState("");
-  const [tolerance, setTolerance] = useState("");
-  const [iterations, setIterations] = useState("");
-  const [x0, setX0] = useState("");
-  const [x1, setX1] = useState("");
-
-  const handleSubmit = (e) => {
+  function handleSubmit(e) {
     e.preventDefault();
-    console.log({
-      functionValue,
-      tolerance,
-      iterations,
-      x0,
-      x1,
-    });
-  };
 
+    const form = e.target;
+    const formData = new FormData(form);
+
+    const formJson = Object.fromEntries(formData.entries());
+    ElPEep(
+      formJson.function,
+      formJson.tolerance,
+      formJson.iteration,
+      formJson.lower_limit,
+      formJson.higher_imit
+    );
+    console.log(formJson);
+  }
   return (
     <div className="container">
       <h1 className="text-Method">Secant Method</h1>
-      <form onSubmit={handleSubmit}>
+      <form method="post" onSubmit={handleSubmit}>
         <div className="item">
-          <label htmlFor="functionValue">Enter a function:</label>
+          <label>Enter a function</label>
+          <br />
           <input
             type="text"
-            id="functionValue"
-            className="form-control"
+            name="function"
+            defaultValue="x²-4"
             placeholder="x^2 - 4"
-            value={functionValue}
-            onChange={(e) => setFunctionValue(e.target.value)}
             required
           />
-          <br />
-          <label htmlFor="tolerance">Enter the tolerance:</label>
-          <input
-            type="number"
-            id="tolerance"
-            className="form-control"
-            placeholder="0.001"
-            value={tolerance}
-            onChange={(e) => setTolerance(e.target.value)}
-            required
-          />
-          <br />
-          <label htmlFor="iterations">Number of iterations:</label>
-          <input
-            type="number"
-            id="iterations"
-            className="form-control"
-            placeholder="50"
-            value={iterations}
-            onChange={(e) => setIterations(e.target.value)}
-            required
-          />
-          <br />
-          <label htmlFor="x0">Enter X0:</label>
-          <input
-            type="number"
-            id="x0"
-            className="form-control"
-            placeholder="1.5"
-            value={x0}
-            onChange={(e) => setX0(e.target.value)}
-            required
-          />
-          <br />
-          <label htmlFor="x1">Enter X1:</label>
-          <input
-            type="number"
-            id="x1"
-            className="form-control"
-            placeholder="2.0"
-            value={x1}
-            onChange={(e) => setX1(e.target.value)}
-            required
-          />
-          <br />
-          <button type="submit" className="btn btn-primary">
-            Calculate
-          </button>
         </div>
+
+        <div className="item">
+          <label>Enter the tolerance</label>
+          <br />
+          <input
+            type="text"
+            name="tolerance"
+            defaultValue="0.0000001"
+            placeholder="0.0000001"
+            required
+          />
+        </div>
+
+        <div className="item">
+          <label>Enter the number of iterations</label>
+          <br />
+          <input
+            type="text"
+            name="iterations"
+            defaultValue="100"
+            placeholder="100"
+            required
+          />
+        </div>
+
+        <div className="item">
+          <label>Enter the lower limit</label>
+          <br />
+          <input
+            type="text"
+            name="lower_limit"
+            defaultValue="1.5"
+            placeholder="1.5"
+            required
+          />
+        </div>
+
+        <div className="item">
+          <label>Enter the higher limit</label>
+          <br />
+          <input
+            type="text"
+            name="higher_limit"
+            defaultValue="2.0"
+            placeholder="2.0"
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-primary">
+          Calculate
+        </button>
       </form>
     </div>
   );
 }
 
-export default MathForm;
-
 function f(func, x) {
   return math.evaluate(func, { x });
 }
+type Props = {
+  func: string;
+  tolerancestr: string;
+  iterationsstr: string;
+  x0str: string;
+  x1str: string;
+};
 
-function ElPEep({ f: func, tolerancestr, iterationsstr, x0str, x1str }) {
+function ElPEep(func, tolerancestr, iterationsstr, x0str, x1str) {
   const tolerance = parseFloat(tolerancestr, 10);
   const iterations = parseInt(iterationsstr, 10);
   const X0Initial = parseFloat(x0str, 10);
@@ -128,7 +133,7 @@ function ElPEep({ f: func, tolerancestr, iterationsstr, x0str, x1str }) {
 
       if (fx1 === 0) {
         lastIterations.push({ iteration: i + 1, Xn: X1, fxn: fx1, error: 0 });
-        setResult(`Root found at: ${X1}`);
+        setResult("Root found at: ${X1}");
         setLastFiveIterations(lastIterations.slice(-5));
         return;
       }
