@@ -11,6 +11,9 @@ export function Secant() {
     <>
       <Navbar />
       <MathForm />
+      const results = ElPEep({f: f, tolerance, iterations, x0, x1 });
+      <ElPEep f tolerance iterations x0 x1/>
+      <h1>results</h1>
     </>
   );
 }
@@ -21,6 +24,7 @@ function MathForm() {
   const [iterations, setIterations] = useState("");
   const [x0, setX0] = useState("");
   const [x1, setX1] = useState("");
+  const f = (x) => eval(functionValue);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -203,3 +207,4 @@ function IterationTable({ iterations }) {
     </table>
   );
 }
+
