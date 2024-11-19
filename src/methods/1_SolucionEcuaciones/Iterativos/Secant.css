@@ -11,13 +11,33 @@
   font-weight: bold;
 }
 
+.secant_form {
+  width: 100%;
+}
+
 .item {
-  flex: 1 0 40%;
-  margin: 10px;
-  padding: 50px;
-  padding-left: 300px;
+  margin: 30px;
+  padding-left: 100px;
+  padding-right: 100px;
+  align-items: center;
 }
 
 .form-control {
   text-align: center;
+}
+
+.text-field {
+  font-weight: bold;
+  font-size: 35px;
+}
+
+.calculate-button.MuiButton-root {
+  background-color: #2a9d8f !important;
+  color: #ffffff !important;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.calculate-button.MuiButton-root:hover {
+  background-color: #51e7bd !important;
 }
