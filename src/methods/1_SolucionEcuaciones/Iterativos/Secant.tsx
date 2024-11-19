@@ -10,9 +10,6 @@ export function Secant() {
     <>
       <Navbar />
       <MathForm />
-      const results = ElPEep({f: f, tolerance, iterations, x0, x1 });
-      <ElPEep f tolerance iterations x0 x1/>
-      <h1>results</h1>
     </>
   );
 }
@@ -211,4 +208,3 @@ function IterationTable({ iterations }) {
     </table>
   );
 }
-

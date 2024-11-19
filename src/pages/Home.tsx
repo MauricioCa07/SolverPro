@@ -18,6 +18,7 @@ export function Home() {
           title="Regla Falsa"
           description="Método similar a la bisección pero usa una interpolación lineal para aproximar mejor la raíz."
           img="assets/Regla_Falsa.jpg"
+          route="/Falserule"
         />
         <Card
           title="Punto Fijo"
@@ -44,6 +45,7 @@ export function Home() {
           title="Búsqueda"
           description="Método para localizar el máximo o mínimo de una función en un intervalo definido."
           img="assets/Busqueda.jpg"
+          route="/Search"
         />
       </div>
 
