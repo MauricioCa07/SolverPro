@@ -7,6 +7,7 @@ import { Bisection_Main } from "./methods/1_SolucionEcuaciones/Directos/Bisectio
 import { FrMain } from "./methods/1_SolucionEcuaciones/Directos/False_Rule.tsx";
 import { SearchMain } from "./methods/1_SolucionEcuaciones/Iterativos/Search.tsx";
 import { LUpartialMain } from "./methods/2_SistemasLineales/Directos/LUpartial.tsx";
+import { Gauss_Main } from "./methods/2_SistemasLineales/Directos/Gauss.tsx";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/Falserule" element={<FrMain />}></Route>
         <Route path="/Search" element={<SearchMain/>}></Route>
         <Route path="/LUpartial" element={<LUpartialMain/>}></Route>
+        <Route path="/gauss" element={<Gauss_Main />}></Route>
       </Routes>
     </Router>
   );
