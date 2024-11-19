@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { create, all } from "mathjs";
 import Navbar from "../../../components/Navbar";
 import Button from "@mui/material/Button";
@@ -99,7 +99,7 @@ function FormInput({ label, name, type = "text", defaultValue }) {
   );
 }
 
-function SecantMethod({ func, tolerancestr, iterationsstr, x0str, x1str }) {
+function SecantMethod({ func, tolerancestr, iterationsstr, x0str, x1str }:Props) {
   const tolerance = parseFloat(tolerancestr);
   const iterations = parseInt(iterationsstr);
   const X0Initial = parseFloat(x0str);
@@ -135,7 +135,7 @@ function SecantMethod({ func, tolerancestr, iterationsstr, x0str, x1str }) {
       lastIterations.push({ iteration: i + 1, Xn, fxn: f(func, Xn), error });
 
       if (error < tolerance) {
-        setResult(`Root found at: ${Xn}`);
+        setResult("Root found at: ${Xn}");
         setLastFiveIterations(lastIterations.slice(-5));
         return;
       }
@@ -193,6 +193,12 @@ function IterationTable({ iterations }) {
   );
 }
 
-function f(func, x) {
+
+type Propsf={
+  func:string;
+  x: string;
+}
+
+function f({func, x}:Propsf) {
   return math.evaluate(func, { x });
 }
