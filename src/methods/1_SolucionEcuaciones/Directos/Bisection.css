@@ -1,0 +1,44 @@
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    height: 500px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .text-Method {
+    padding-left: 75px;
+    font-weight: bold;
+  }
+  
+  .secant_form {
+    width: 100%;
+  }
+  
+  .item {
+    margin: 30px;
+    padding-left: 100px;
+    padding-right: 100px;
+    align-items: center;
+  }
+  
+  .form-control {
+    text-align: center;
+  }
+  
+  .text-field {
+    font-weight: bold;
+    font-size: 35px;
+  }
+  
+  .calculate-button.MuiButton-root {
+    background-color: #2a9d8f !important;
+    color: #ffffff !important;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .calculate-button.MuiButton-root:hover {
+    background-color: #51e7bd !important;
+  }
+  
