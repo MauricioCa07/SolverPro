@@ -3,6 +3,7 @@ import { create, all } from 'mathjs';
 
 const math = create(all);
 
+
 // Función para obtener la matriz triangular inferior
 function tril(matrix) {
     const n = matrix.length;
@@ -71,5 +72,3 @@ export function GaussSeidel({ A, b, x0, tol, Nmax }) {
         </div>
     );
 }
-
-export default GaussSeidel;

@@ -55,6 +55,7 @@ export function Home() {
           title="Crout"
           description="Decomposition of a matrix into \( L \) and \( U \) factors to solve linear systems."
           img="assets/Crout.jpg"
+          route="/Crout"
         />
         <Card
           title="Gauss Elimination"
@@ -92,6 +93,7 @@ export function Home() {
           title="Gauss-Seidel"
           description="Iterative method to solve linear systems by improving successive solutions."
           img="assets/Gauss_Seidel.jpg"
+          route="/GSeidel"
         />
         <Card
           title="SOR"

@@ -83,90 +83,90 @@ function Form() {
 
   return (
     <div className="container">
-      <h1 className="text-Method">LU Decomposition</h1>
-      <form onSubmit={handleSubmit}>
-        <div
-          style={{
-            marginTop: "50px",
-            marginBottom: "50px",
-            textAlign: "center",
-          }}
-        >
-          <TextField
-            label="Matrix Size (n)"
-            type="number"
-            value={matrixSize}
-            onChange={handleSizeChange}
-            InputProps={{ inputProps: { min: 2, max: 10 } }}
-            style={{ width: "500px" }}
-          />
-        </div>
+    <h1 className="text-Method">LU Decomposition</h1>
+    <form onSubmit={handleSubmit}>
+      <div
+        style={{
+          marginTop: "50px",
+          marginBottom: "50px",
+          textAlign: "center",
+        }}
+      >
+        <TextField
+          label="Matrix Size (n)"
+          type="number"
+          value={matrixSize}
+          onChange={handleSizeChange}
+          InputProps={{ inputProps: { min: 2, max: 10 } }}
+          style={{ width: "500px" }}
+        />
+      </div>
 
-        <Typography variant="h6" gutterBottom>
-          Enter Matrix A:
-        </Typography>
-        <Box sx={{ overflowX: "auto" }}>
-          <Grid container spacing={1} justifyContent="center">
-            {matrixA.map((row, rowIndex) => (
-              <Grid item key={rowIndex}>
-                <Grid container direction="column" spacing={1}>
-                  {row.map((value, colIndex) => (
-                    <Grid item key={colIndex}>
-                      <TextField
-                        variant="outlined"
-                        value={value}
-                        onChange={(e) =>
-                          handleMatrixInputChange(e, rowIndex, colIndex)
-                        }
-                        style={{ width: "80px" }}
-                      />
-                    </Grid>
-                  ))}
-                </Grid>
+      <Typography variant="h6" gutterBottom>
+        Enter Matrix A:
+      </Typography>
+      <Box sx={{ overflowX: "auto" }}>
+        <Grid container spacing={1} justifyContent="center">
+          {matrixA.map((row, rowIndex) => (
+            <Grid item key={rowIndex}>
+              <Grid container direction="column" spacing={1}>
+                {row.map((value, colIndex) => (
+                  <Grid item key={colIndex}>
+                    <TextField
+                      variant="outlined"
+                      value={value}
+                      onChange={(e) =>
+                        handleMatrixInputChange(e, rowIndex, colIndex)
+                      }
+                      style={{ width: "80px" }}
+                    />
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
-        </Box>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
 
-        <Typography variant="h6" gutterBottom style={{ marginTop: "20px" }}>
-          Enter Vector b:
-        </Typography>
-        <Box sx={{ overflowX: "auto" }}>
-          <Grid container spacing={1} justifyContent="center">
-            {vectorB.map((value, index) => (
-              <Grid item key={index}>
-                <TextField
-                  variant="outlined"
-                  value={value}
-                  onChange={(e) => handleVectorInputChange(e, index)}
-                  style={{ width: "80px" }}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
+      <Typography variant="h6" gutterBottom style={{ marginTop: "20px" }}>
+        Enter Vector b:
+      </Typography>
+      <Box sx={{ overflowX: "auto" }}>
+        <Grid container spacing={1} justifyContent="center">
+          {vectorB.map((value, index) => (
+            <Grid item key={index}>
+              <TextField
+                variant="outlined"
+                value={value}
+                onChange={(e) => handleVectorInputChange(e, index)}
+                style={{ width: "80px" }}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
 
-        <div
-          className="item"
-          style={{ textAlign: "center", marginTop: "30px" }}
+      <div
+        className="item"
+        style={{ textAlign: "center", marginTop: "30px" }}
+      >
+        <Button
+          className="calculate-button"
+          type="submit"
+          variant="contained"
+          disableElevation
+          style={{ backgroundColor: "#2a9d8f", color: "#fff" }}
         >
-          <Button
-            className="calculate-button"
-            type="submit"
-            variant="contained"
-            disableElevation
-            style={{ backgroundColor: "#2a9d8f", color: "#fff" }}
-          >
-            Calculate
-          </Button>
-        </div>
-      </form>
-      {resultComponent && (
-        <div className="result-container" style={{ marginTop: "40px" }}>
-          {resultComponent}
-        </div>
-      )}
-    </div>
+          Calculate
+        </Button>
+      </div>
+    </form>
+    {resultComponent && (
+      <div className="result-container" style={{ marginTop: "40px" }}>
+        {resultComponent}
+      </div>
+    )}
+  </div>
   );
 }
 
