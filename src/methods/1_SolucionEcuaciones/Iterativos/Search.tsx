@@ -2,6 +2,7 @@ import React from "react";
 import { create, all } from "mathjs";
 import { useState, useEffect } from "react";
 import Navbar from "../../../components/Navbar";
+import Plot from 'react-plotly.js';
 
 const math = create(all);
 

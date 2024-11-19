@@ -2,6 +2,7 @@
 import { create, all, string } from "mathjs";
 import Navbar from "../../../components/Navbar";
 import { useState, useEffect } from "react";
+import Plot from 'react-plotly.js';
 
 // Create an instance of Math.js
 const math = create(all);
@@ -15,8 +16,37 @@ export function Bisection_Main() {
   );
 }
 
+const GraphFunction = ({func}: {func: (x: number) => number}) =>{
+  const xValues = Array.from({length:100}, (_,i) => -5+i*0.1);
+  const yValues =xValues.map(x => func(x));
+
+  return(
+    <Plot
+      data={[
+        {
+          x: xValues,
+          y: yValues,
+          type: 'scatter',
+          mode: 'lines',
+          line: {color: 'blue'}
+        }
+      ]}
+      layout={{
+        title:'Function graph',
+        xaxis:{title: 'X'},
+        yaxis:{title: 'f(x)'}
+      }}
+      style={{ width: '100%', height: '100%'}}
+    />
+  );
+};
+
 function Math_Form() {
-  function handleSubmit(e) {
+  const [userFunction, setUserFunction] = useState<string>('');
+  const [parsedFunction, setParsedFunction] = useState<((x: number) => number) | null>(null);
+  
+  function handleSubmit(e: React.FormEvent) {
+
     e.preventDefault();
 
     const form = e.target;
@@ -25,6 +55,9 @@ function Math_Form() {
     const formJson = Object.fromEntries(formData.entries());
     console.log(formJson); 
 
+    const func = (x: number) => math.evaluate(userFunction, { x });
+    setParsedFunction(() => func);
+
     Bisection(
       formJson.function,
       formJson.lower_limit,
@@ -32,7 +65,7 @@ function Math_Form() {
       formJson.tolerance,
       formJson.iterations,
     );
-  }
+  };
 
   return (
     <div className="container">
@@ -42,8 +75,11 @@ function Math_Form() {
           <label>Enter a function</label>
           <br />
           <input
+            id="functionInput"
             type="text"
             name="function"
+            value={userFunction}
+            onChange={(e) => setUserFunction(e.target.value)}
             defaultValue="x^2-4"
             placeholder="x^2 - 4"
             required
@@ -102,6 +138,7 @@ function Math_Form() {
           Calculate
         </button>
       </form>
+      {parsedFunction && <GraphFunction func= {parsedFunction}/>}
     </div>
   );
 }
