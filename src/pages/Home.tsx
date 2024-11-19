@@ -70,6 +70,7 @@ export function Home() {
           title="LU Parcial"
           description="Factorización de matrices en \( L \) y \( U \) utilizando pivoteo parcial."
           img="assets/Lu_Pivoteo_Parcial.jpg"
+          route="/LUpartial"
         />
         <Card
           title="Cholesky"
