@@ -1,216 +1,212 @@
-//import React, { useEffect } from "react";
-import { create, all, string } from "mathjs";
+import { useState, useEffect, useRef } from "react";
+import { create, all } from "mathjs";
 import Navbar from "../../../components/Navbar";
-import { useState, useEffect } from "react";
-import Plot from 'react-plotly.js';
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import "./Bisection.css";
+import functionPlot from "function-plot";
 
-// Create an instance of Math.js
 const math = create(all);
 
 export function Bisection_Main() {
   return (
     <>
       <Navbar />
-      <Math_Form />
+      <BisectionForm />
     </>
   );
 }
 
-const GraphFunction = ({func}: {func: (x: number) => number}) =>{
-  const xValues = Array.from({length:100}, (_,i) => -5+i*0.1);
-  const yValues =xValues.map(x => func(x));
+function BisectionForm() {
+  const [resultComponent, setResultComponent] = useState(null);
+  const [canPlot, setCanPlot] = useState(false);
+  const [rootPoint, setRootPoint] = useState(null);
 
-  return(
-    <Plot
-      data={[
-        {
-          x: xValues,
-          y: yValues,
-          type: 'scatter',
-          mode: 'lines',
-          line: {color: 'blue'}
-        }
-      ]}
-      layout={{
-        title:'Function graph',
-        xaxis:{title: 'X'},
-        yaxis:{title: 'f(x)'}
-      }}
-      style={{ width: '100%', height: '100%'}}
-    />
-  );
-};
+  const [func, setFunc] = useState("x^2 - 4");
+  const [lowerLimit, setLowerLimit] = useState(1.5);
+  const [higherLimit, setHigherLimit] = useState(2.0);
 
-function Math_Form() {
-  const [userFunction, setUserFunction] = useState<string>('');
-  const [parsedFunction, setParsedFunction] = useState<((x: number) => number) | null>(null);
-  
-  function handleSubmit(e: React.FormEvent) {
-
+  function handleSubmit(e) {
     e.preventDefault();
-
-    const form = e.target;
-    const formData = new FormData(form);
-
+    const formData = new FormData(e.target);
     const formJson = Object.fromEntries(formData.entries());
-    console.log(formJson); 
 
-    const func = (x: number) => math.evaluate(userFunction, { x });
-    setParsedFunction(() => func);
+    setFunc(formJson["function"]);
+    setLowerLimit(parseFloat(formJson["lower_limit"]));
+    setHigherLimit(parseFloat(formJson["higher_limit"]));
 
-    Bisection(
-      formJson.function,
-      formJson.lower_limit,
-      formJson.higher_limit,
-      formJson.tolerance,
-      formJson.iterations,
-    );
-  };
+    const props = {
+      func: formJson["function"],
+      lowerLimitStr: formJson["lower_limit"],
+      higherLimitStr: formJson["higher_limit"],
+      toleranceStr: formJson["tolerance"],
+      iterationsStr: formJson["iterations"],
+      setRootPoint: setRootPoint,
+    };
+
+    setResultComponent(<BisectionMethod {...props} />);
+    setCanPlot(true);
+  }
 
   return (
     <div className="container">
-      <h1 className="text-Method">Bisection method for root aproximation</h1>
-      <form method="post" onSubmit={handleSubmit}>
-        <div className="item">
-          <label>Enter a function</label>
-          <br />
-          <input
-            id="functionInput"
-            type="text"
-            name="function"
-            value={userFunction}
-            onChange={(e) => setUserFunction(e.target.value)}
-            defaultValue="x^2-4"
-            placeholder="x^2 - 4"
-            required
-          />
+      <h1 className="text-Method">Método de Bisección</h1>
+      <form id="bisection-form" onSubmit={handleSubmit}>
+        <FormInput
+          label="Ingresa una función"
+          name="function"
+          defaultValue="x^2 - 4"
+        />
+        <FormInput
+          label="Límite inferior"
+          name="lower_limit"
+          defaultValue="1.5"
+        />
+        <FormInput
+          label="Límite superior"
+          name="higher_limit"
+          defaultValue="2.0"
+        />
+        <FormInput
+          label="Tolerancia"
+          name="tolerance"
+          defaultValue="1e-7"
+        />
+        <FormInput
+          label="Número de iteraciones"
+          name="iterations"
+          type="number"
+          defaultValue="100"
+        />
+        <div className="item" style={{ display: "flex", gap: "10px" }}>
+          <Button
+            className="calculate-button"
+            type="submit"
+            variant="contained"
+          >
+            Calcular
+          </Button>
         </div>
-
-        <div className="item">
-          <label>Enter the tolerance</label>
-          <br />
-          <input
-            type="text"
-            name="tolerance"
-            defaultValue="0.0000001"
-            placeholder="0.0000001"
-            required
-          />
-        </div>
-
-        <div className="item">
-          <label>Enter the number of iterations</label>
-          <br />
-          <input
-            type="text"
-            name="iterations"
-            defaultValue="100"
-            placeholder="100"
-            required
-          />
-        </div>
-
-        <div className="item">
-          <label>Enter the lower limit</label>
-          <br />
-          <input
-            type="text"
-            name="lower_limit"
-            defaultValue="1.5"
-            placeholder="1.5"
-            required
-          />
-        </div>
-
-        <div className="item">
-          <label>Enter the higher limit</label>
-          <br />
-          <input
-            type="text"
-            name="higher_limit"
-            defaultValue="2.0"
-            placeholder="2.0"
-            required
-          />
-        </div>
-
-        <button type="submit" className="btn btn-primary">
-          Calculate
-        </button>
       </form>
-      {parsedFunction && <GraphFunction func= {parsedFunction}/>}
+      {resultComponent && <div className="result-container">{resultComponent}</div>}
+      {canPlot && (
+        <GraphFunction
+          func={func}
+          rootPoint={rootPoint}
+          lowerLimit={lowerLimit}
+          higherLimit={higherLimit}
+        />
+      )}
     </div>
   );
 }
 
-function evaluateFunction(func: string, x: number): number {
-  return math.evaluate(func, { x });
+function FormInput({ label, name, type = "text", defaultValue }) {
+  return (
+    <div className="item">
+      <label>{label}</label>
+      <br />
+      <TextField
+        type={type}
+        name={name}
+        defaultValue={defaultValue}
+        required
+        variant="outlined"
+      />
+    </div>
+  );
 }
-type Props = {
-  func: string;
-  astring: string;
-  bstring: string;
-  tolstring: string;
-  Nmaxstring: string;
-};
 
-function Bisection(func, astring, bstring, tolstring, Nmaxstring) {
-  const a = parseFloat(astring);
-  const b = parseFloat(bstring);
-  const tol = parseFloat(tolstring);
-  const Nmax = parseInt(Nmaxstring, 10);
+function BisectionMethod(props) {
+  const { func, lowerLimitStr, higherLimitStr, toleranceStr, iterationsStr, setRootPoint } = props;
+
+  const lowerLimit = parseFloat(lowerLimitStr);
+  const higherLimit = parseFloat(higherLimitStr);
+  const tolerance = parseFloat(toleranceStr);
+  const iterations = parseInt(iterationsStr);
 
   const [result, setResult] = useState(null);
   const [lastIterations, setLastIterations] = useState([]);
 
-  useEffect(() =>{
-    let aValue = a;
-  let bValue = b;
-  let fa = evaluateFunction(func, aValue);
-  let pm = (aValue + bValue) / 2;
-  let fpm = evaluateFunction(func, pm);
-  let error = 1000;
-  let iterations = 1;
-  let lastIterations = [];
+  useEffect(() => {
+    let a = lowerLimit;
+    let b = higherLimit;
+    let fa = f(func, a);
+    let fb = f(func, b);
 
-  while (error > tol && iterations < Nmax) {
-    if (fa * fpm < 0) {
-      bValue = pm;
-    } else {
-      aValue = pm;
-      fa = fpm;
+    // Verificar si alguno de los límites es raíz
+    if (fa === 0) {
+      setResult(`La raíz es ${a}, ya que f(a) = 0.`);
+      setRootPoint({ x: a, y: fa });
+      return;
     }
 
-    const previousPm = pm;
-    pm = (aValue + bValue) / 2;
-    fpm = evaluateFunction(func, pm);
-    error = Math.abs(pm - previousPm);
-    iterations++;
-    setResult(`Root aproximation at ${pm}`);
-    console.log(`Root aproximation at ${pm}`); 
-    lastIterations.push({iteration: iterations+1, a: aValue, b: bValue, pm:pm, error: error});
-    setLastIterations(lastIterations);
-    
-  }
-  }, [{ func, astring, bstring, tolstring, Nmaxstring }]);
-  
-  
+    if (fb === 0) {
+      setResult(`La raíz es ${b}, ya que f(b) = 0.`);
+      setRootPoint({ x: b, y: fb });
+      return;
+    }
+
+    if (fa * fb >= 0) {
+      setResult("Error: La función debe tener signos opuestos en los límites.");
+      return;
+    }
+
+    let pm = (a + b) / 2;
+    let fpm = f(func, pm);
+    let error = Math.abs(b - a);
+    const iterationsData = [];
+
+    for (let i = 0; i < iterations && error > tolerance; i++) {
+      if (fa * fpm < 0) {
+        b = pm;
+        fb = fpm;
+      } else {
+        a = pm;
+        fa = fpm;
+      }
+
+      const previousPm = pm;
+      pm = (a + b) / 2;
+      fpm = f(func, pm);
+      error = Math.abs(pm - previousPm);
+
+      iterationsData.push({
+        iteration: i + 1,
+        a,
+        b,
+        pm,
+        error,
+      });
+    }
+
+    setResult(`Aproximación de la raíz: ${pm}`);
+    setLastIterations(iterationsData);
+    setRootPoint({ x: pm, y: fpm });
+  }, [func, lowerLimit, higherLimit, tolerance, iterations, setRootPoint]);
 
   return (
     <div>
-      <h1>Bisection Method Result</h1>
-      <p>{result}</p>
-      <IterationTable iterations={({lastIterations})}/>
+      <h1>{result}</h1>
+      <IterationTable iterations={lastIterations} />
     </div>
   );
 }
 
-function IterationTable({iterations}){
+function IterationTable({ iterations }) {
+  const formatNumber = (num) => {
+    if (Math.abs(num) < 1e-3 || Math.abs(num) > 1e6) {
+      return num.toExponential(4); // Notación científica con 4 decimales
+    } else {
+      return num.toFixed(7); // Formato fijo con 7 decimales
+    }
+  };
+
   return (
-    <table>
+    <table className="table">
       <thead>
         <tr>
-          <th>Iteration</th>
+          <th>Iteración</th>
           <th>a</th>
           <th>b</th>
           <th>pm</th>
@@ -221,13 +217,66 @@ function IterationTable({iterations}){
         {iterations.map((row, index) => (
           <tr key={index}>
             <td>{row.iteration}</td>
-            <td>{row.a}</td>
-            <td>{row.b}</td>
-            <td>{row.pm}</td>
-            <td>{row.error}</td>
+            <td>{formatNumber(row.a)}</td>
+            <td>{formatNumber(row.b)}</td>
+            <td>{formatNumber(row.pm)}</td>
+            <td>{formatNumber(row.error)}</td>
           </tr>
         ))}
       </tbody>
     </table>
   );
+}
+
+function GraphFunction({ func, rootPoint, lowerLimit, higherLimit }) {
+  const graphRef = useRef(null);
+
+  useEffect(() => {
+    // Configuración de la gráfica interactiva
+    const width = 800;
+    const height = 400;
+    const xDomain = [
+      lowerLimit - (higherLimit - lowerLimit) * 0.5,
+      higherLimit + (higherLimit - lowerLimit) * 0.5,
+    ];
+
+    try {
+      // Limpiar el contenedor antes de volver a graficar
+      if (graphRef.current) {
+        graphRef.current.innerHTML = "";
+      }
+
+      functionPlot({
+        target: graphRef.current,
+        width,
+        height,
+        xAxis: { domain: xDomain },
+        yAxis: { label: "f(x)" },
+        grid: true,
+        data: [
+          {
+            fn: func,
+            color: "blue",
+          },
+          rootPoint && {
+            points: [[rootPoint.x, rootPoint.y]],
+            color: "red",
+            fnType: "points",
+          },
+        ].filter(Boolean), // Filtrar si no hay raíz aún
+      });
+    } catch (err) {
+      console.error("Error al graficar la función: ", err);
+    }
+  }, [func, rootPoint, lowerLimit, higherLimit]);
+
+  return <div ref={graphRef} className="graph-container"></div>;
+}
+
+function f(func, x) {
+  try {
+    return math.evaluate(func, { x });
+  } catch {
+    return NaN;
+  }
 }
