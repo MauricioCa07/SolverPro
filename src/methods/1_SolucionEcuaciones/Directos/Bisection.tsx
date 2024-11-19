@@ -17,7 +17,9 @@ export function Bisection_Main() {
 }
 
 const GraphFunction = ({func}: {func: (x: number) => number}) =>{
-  const xValues = Array.from({length:100}, (_,i) => -5+i*0.1);
+  const start = -100;
+  const end = 100;
+  const xValues = Array.from({length: end - start + 1}, (_,i) => start + i);
   const yValues =xValues.map(x => func(x));
 
   return(
@@ -33,8 +35,9 @@ const GraphFunction = ({func}: {func: (x: number) => number}) =>{
       ]}
       layout={{
         title:'Function graph',
-        xaxis:{title: 'X'},
-        yaxis:{title: 'f(x)'}
+        xaxis:{title: 'X', scaleanchor: 'y', range: [-25, 25], domain: [0, 0.5]},
+        yaxis:{title: 'f(x)', scaleanchor: 'x', range: [-50, 50], domain: [0, 1]},
+        autosize: true
       }}
       style={{ width: '100%', height: '100%'}}
     />

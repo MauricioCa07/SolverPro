@@ -1,184 +1,279 @@
-import React, { useState, useEffect } from 'react';
-import { zeros, identity } from 'mathjs';
+import { useState, useEffect } from "react";
+import {
+  Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  TextField,
+  Grid,
+  Box,
+  Button,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Navbar from "../../../components/Navbar";
 
-export function LUpartialMain(){
-    return(
-        <>
-            <Navbar />
-            <LUForm/>
-        </>
-    );
+export function LUpartialMain() {
+  return (
+    <>
+      <Navbar />
+      <Form />
+    </>
+  );
 }
 
-type Props = {
-    A: number[][];
-    b: number[];
-};
+function Form() {
+  const [matrixSize, setMatrixSize] = useState(3);
+  const [matrixA, setMatrixA] = useState([]);
+  const [vectorB, setVectorB] = useState([]);
+  const [resultComponent, setResultComponent] = useState(null);
 
-export function PartialLU({ A, b }: Props) {
-    const [result, setResult] = useState<{
-        L: number[][];
-        U: number[][];
-        P: number[][];
-        x: number[];
-    } | null>(null);
+  useEffect(() => {
+    initializeMatrixAndVector(matrixSize);
+  }, []);
 
-    useEffect(() => {
-        const calculatePartialLU = () => {
-            const n = A.length;
-            let L = identity(n)._data as number[][]; // Matriz identidad para L
-            let U = zeros(n, n)._data as number[][];  // Matriz de ceros para U
-            let P = identity(n)._data as number[][];  // Matriz identidad para P (permutación)
-            let M = A.map(row => [...row]); // Copia profunda de A para M
+  function initializeMatrixAndVector(size) {
+    const newMatrixA = Array.from({ length: size }, () => Array(size).fill(""));
+    const newVectorB = Array(size).fill("");
+    setMatrixA(newMatrixA);
+    setVectorB(newVectorB);
+  }
 
-            // Factorización LU con pivoteo parcial
-            for (let i = 0; i < n - 1; i++) {
-                // Cambio de filas
-                const columnSubarray = M.slice(i + 1).map(row => Math.abs(row[i]));
-                const maxVal = Math.max(...columnSubarray);
-                const relativeMaxRow = columnSubarray.indexOf(maxVal);
-                const maxRow = i + 1 + relativeMaxRow;
+  function handleSizeChange(e) {
+    const size = parseInt(e.target.value);
+    if (size > 1 && size <= 10) {
+      setMatrixSize(size);
+      initializeMatrixAndVector(size);
+    } else {
+      alert("Please enter a size between 2 and 10.");
+    }
+  }
 
-                if (maxVal > Math.abs(M[i][i])) {
-                    // Intercambiar filas en M, P y L
-                    [M[maxRow], M[i]] = [M[i], M[maxRow]];
-                    [P[maxRow], P[i]] = [P[i], P[maxRow]];
-                    if (i > 0) {
-                        [L[maxRow], L[i]] = [L[i], L[maxRow]];
-                    }
-                }
+  function handleMatrixInputChange(e, row, col) {
+    const value = e.target.value;
+    const updatedMatrix = [...matrixA];
+    updatedMatrix[row][col] = value;
+    setMatrixA(updatedMatrix);
+  }
 
-                // Eliminación Gaussiana
-                for (let j = i + 1; j < n; j++) {
-                    if (M[j][i] !== 0) {
-                        L[j][i] = M[j][i] / M[i][i];
-                        for (let k = i; k < n; k++) {
-                            M[j][k] -= L[j][i] * M[i][k];
+  function handleVectorInputChange(e, index) {
+    const value = e.target.value;
+    const updatedVector = [...vectorB];
+    updatedVector[index] = value;
+    setVectorB(updatedVector);
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    const A = matrixA.map((row) => row.map((val) => parseFloat(val)));
+    const b = vectorB.map((val) => parseFloat(val));
+
+    if (A.some((row) => row.some((val) => isNaN(val)))) {
+      alert("Please enter valid numbers for matrix A.");
+      return;
+    }
+    if (b.some((val) => isNaN(val))) {
+      alert("Please enter valid numbers for vector b.");
+      return;
+    }
+
+    const result = luDecomposition(A, b);
+    setResultComponent(<LU_Method result={result} />);
+  }
+
+  return (
+    <div className="container">
+      <h1 className="text-Method">LU Decomposition</h1>
+      <form onSubmit={handleSubmit}>
+        <div
+          style={{
+            marginTop: "50px",
+            marginBottom: "50px",
+            textAlign: "center",
+          }}
+        >
+          <TextField
+            label="Matrix Size (n)"
+            type="number"
+            value={matrixSize}
+            onChange={handleSizeChange}
+            InputProps={{ inputProps: { min: 2, max: 10 } }}
+            style={{ width: "500px" }}
+          />
+        </div>
+
+        <Typography variant="h6" gutterBottom>
+          Enter Matrix A:
+        </Typography>
+        <Box sx={{ overflowX: "auto" }}>
+          <Grid container spacing={1} justifyContent="center">
+            {matrixA.map((row, rowIndex) => (
+              <Grid item key={rowIndex}>
+                <Grid container direction="column" spacing={1}>
+                  {row.map((value, colIndex) => (
+                    <Grid item key={colIndex}>
+                      <TextField
+                        variant="outlined"
+                        value={value}
+                        onChange={(e) =>
+                          handleMatrixInputChange(e, rowIndex, colIndex)
                         }
-                    }
-                }
+                        style={{ width: "80px" }}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
 
-                // Asignar valores a U
-                for (let k = i; k < n; k++) {
-                    U[i][k] = M[i][k];
-                }
-            }
+        <Typography variant="h6" gutterBottom style={{ marginTop: "20px" }}>
+          Enter Vector b:
+        </Typography>
+        <Box sx={{ overflowX: "auto" }}>
+          <Grid container spacing={1} justifyContent="center">
+            {vectorB.map((value, index) => (
+              <Grid item key={index}>
+                <TextField
+                  variant="outlined"
+                  value={value}
+                  onChange={(e) => handleVectorInputChange(e, index)}
+                  style={{ width: "80px" }}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
 
-            // Último elemento de la diagonal de U
-            U[n - 1][n - 1] = M[n - 1][n - 1];
-
-            // Paso 1: Calcular Pb
-            const Pb = P.map((row, i) => row.reduce((sum, val, j) => sum + val * b[j], 0));
-
-            // Paso 2: Resolver Ly = Pb (sustitución hacia adelante)
-            const y = Array(n).fill(0);
-            for (let i = 0; i < n; i++) {
-                y[i] = (Pb[i] - L[i].slice(0, i).reduce((sum, val, j) => sum + val * y[j], 0)) / L[i][i];
-            }
-
-            // Paso 3: Resolver Ux = y (sustitución hacia atrás)
-            const x = Array(n).fill(0);
-            for (let i = n - 1; i >= 0; i--) {
-                x[i] = (y[i] - U[i].slice(i + 1).reduce((sum, val, j) => sum + val * x[i + 1 + j], 0)) / U[i][i];
-            }
-
-            setResult({ L, U, P, x });
-        };
-
-        calculatePartialLU();
-    }, [A, b]);
-
-
-    return (
-        <div>
-            <h2>Factorización LU con Pivoteo Parcial</h2>
-            {result && (
-                <>
-                    <h3>Matriz L:</h3>
-                    <pre>{JSON.stringify(result.L, null, 2)}</pre>
-                    <h3>Matriz U:</h3>
-                    <pre>{JSON.stringify(result.U, null, 2)}</pre>
-                    <h3>Matriz P (Permutación):</h3>
-                    <pre>{JSON.stringify(result.P, null, 2)}</pre>
-                    <h3>Solución x:</h3>
-                    <pre>{JSON.stringify(result.x, null, 2)}</pre>
-                </>
-            )}
+        <div
+          className="item"
+          style={{ textAlign: "center", marginTop: "30px" }}
+        >
+          <Button
+            className="calculate-button"
+            type="submit"
+            variant="contained"
+            disableElevation
+            style={{ backgroundColor: "#2a9d8f", color: "#fff" }}
+          >
+            Calculate
+          </Button>
         </div>
-    );
+      </form>
+      {resultComponent && (
+        <div className="result-container" style={{ marginTop: "40px" }}>
+          {resultComponent}
+        </div>
+      )}
+    </div>
+  );
 }
 
-export function LUForm() {
-    const [matrix, setMatrix] = useState<string>('');
-    const [vector, setVector] = useState<string>('');
-    const [parsedMatrix, setParsedMatrix] = useState<number[][] | null>(null);
-    const [parsedVector, setParsedVector] = useState<number[] | null>(null);
-
-    const parseMatrix = (input: string): number[][] => {
-        return input
-            .trim()
-            .split('\n')
-            .map(row => row.trim().split(/\s+/).map(Number));
-    };
-
-    const parseVector = (input: string): number[] => {
-        return input
-            .trim()
-            .split(" ")
-            .map(Number);
-    };
-
-    //console.log("Matrix:", parseMatrix);
-    //console.log("Vector:", parseVector);
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        try {
-            const parsedA = parseMatrix(matrix);
-            const parsedB = parseVector(vector);
-
-            if (parsedA.length !== parsedB.length) {
-                alert('El número de filas en la matriz debe coincidir con la longitud del vector.');
-                return;
-            }
-
-            setParsedMatrix(parsedA);
-            setParsedVector(parsedB);
-        } catch (error) {
-            alert('Formato de entrada inválido. Asegúrese de usar números separados por espacios y filas separadas por líneas nuevas.');
-        }
-    };
-
+function LU_Method({ result }) {
+  if (result.error) {
     return (
-        <div>
-            <h2>Ingrese la matriz y el vector</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Matriz (A):</label>
-                    <textarea
-                        value={matrix}
-                        onChange={(e) => setMatrix(e.target.value)}
-                        placeholder="Ejemplo: 1 2 3\n4 5 6\n7 8 9"
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Vector (b):</label>
-                    <textarea
-                        value={vector}
-                        onChange={(e) => setVector(e.target.value)}
-                        placeholder="Ejemplo: 1 2 3"
-                        required
-                    />
-                </div>
-                <button type="submit">Calcular</button>
-            </form>
-            {parsedMatrix && parsedVector && (
-                <PartialLU A={parsedMatrix} b={parsedVector} />
-                
-            )}
-        </div>
-
+      <Typography variant="h6" color="error">
+        {result.error}
+      </Typography>
     );
+  }
+
+  return (
+    <div>
+      <Typography variant="h4" gutterBottom>
+        Solution Vector x:
+      </Typography>
+      <ul>
+        {result.x.map((value, index) => (
+          <li key={index}>
+            <Typography variant="body1">
+              x<sub>{index + 1}</sub> = {value.toFixed(6)}
+            </Typography>
+          </li>
+        ))}
+      </ul>
+
+      <Typography variant="h4" gutterBottom style={{ marginTop: "30px" }}>
+        Steps:
+      </Typography>
+
+      {result.steps.map((step, index) => (
+        <Accordion key={index} style={{ backgroundColor: "#e9ecef" }}>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls={`panel${index}-content`}
+            id={`panel${index}-header`}
+          >
+            <Typography variant="h6">{step.title}</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <pre style={{ whiteSpace: "pre-wrap" }}>{step.description}</pre>
+          </AccordionDetails>
+        </Accordion>
+      ))}
+    </div>
+  );
 }
+
+function luDecomposition(A, b) {
+  const n = A.length;
+  const steps = [];
+
+  let L = Array.from({ length: n }, () => Array(n).fill(0));
+  let U = A.map((row) => row.slice());
+  let P = Array.from({ length: n }, (_, i) => i);
+
+  for (let k = 0; k < n; k++) {
+    let pivot = k;
+    for (let i = k + 1; i < n; i++) {
+      if (Math.abs(U[i][k]) > Math.abs(U[pivot][k])) {
+        pivot = i;
+      }
+    }
+    if (pivot !== k) {
+      [U[k], U[pivot]] = [U[pivot], U[k]];
+      [P[k], P[pivot]] = [P[pivot], P[k]];
+      steps.push({
+        title: `Pivot Step ${k + 1}`,
+        description: `Swapped rows ${k} and ${pivot}.`,
+      });
+    }
+
+    for (let i = k + 1; i < n; i++) {
+      const m = U[i][k] / U[k][k];
+      L[i][k] = m;
+      for (let j = k; j < n; j++) {
+        U[i][j] -= m * U[k][j];
+      }
+    }
+    steps.push({
+      title: `LU Decomposition Step ${k + 1}`,
+      description: `Matrix U:\n${matrixToString(U)}\nMatrix L:\n${matrixToString( L)}`,
+    });
+  }
+
+   // Ahora resolvemos el sistema Ly = b (sustitución progresiva)
+   const y = Array(n).fill(0);
+   for (let i = 0; i < n; i++) {
+     y[i] = b[P[i]] - L[i].slice(0, i).reduce((sum, value, index) => sum + value * y[index], 0);
+   }
+ 
+   // Luego resolvemos el sistema Ux = y (sustitución regresiva)
+   const x = Array(n).fill(0);
+   for (let i = n - 1; i >= 0; i--) {
+     x[i] = (y[i] - U[i].slice(i + 1).reduce((sum, value, index) => sum + value * x[i + 1 + index], 0)) / U[i][i];
+   }
+   
+  return { x, steps };
+}
+
+function matrixToString(matrix) {
+    return matrix
+      .map((row) => row.map((val) => val.toFixed(6)).join("\t"))
+      .join("\n");
+  }
+  
+  function vectorToString(vector) {
+    return vector.map((val) => val.toFixed(6)).join("\n");
+  }
