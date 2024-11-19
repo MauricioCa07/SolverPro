@@ -1,123 +1,109 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { create, all } from "mathjs";
 import Navbar from "../../../components/Navbar";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
 import "./Secant.css";
 
 const math = create(all);
 
-export function Secant() {
+export function Secant_Main() {
   return (
     <>
       <Navbar />
-      <MathForm />
+      <SecantForm />
     </>
   );
 }
 
-function MathForm() {
+function SecantForm() {
+  const [resultComponent, setResultComponent] = useState(null);
+
   function handleSubmit(e) {
     e.preventDefault();
-
-    const form = e.target;
-    const formData = new FormData(form);
-
+    const formData = new FormData(e.target);
     const formJson = Object.fromEntries(formData.entries());
-    ElPEep(
-      formJson.function,
-      formJson.tolerance,
-      formJson.iteration,
-      formJson.lower_limit,
-      formJson.higher_imit
-    );
-    console.log(formJson);
+
+    const props = {
+      func: formJson["function"],
+      tolerancestr: formJson["tolerance"],
+      iterationsstr: formJson["iterations"],
+      x0str: formJson["x0"],
+      x1str: formJson["x1"],
+    };
+
+    setResultComponent(<SecantMethod {...props} />);
   }
+
   return (
     <div className="container">
       <h1 className="text-Method">Secant Method</h1>
-      <form method="post" onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
+        <FormInput
+          label="Enter a function"
+          name="function"
+          defaultValue="x^2-4"
+        />
+        <FormInput
+          label="Enter the tolerance"
+          name="tolerance"
+          defaultValue="1e-7"
+        />
+        <FormInput
+          label="Enter the number of iterations"
+          name="iterations"
+          type="number"
+          defaultValue="100"
+        />
+        <FormInput
+          label="Enter the initial guess X0"
+          name="x0"
+          defaultValue="1.5"
+        />
+        <FormInput
+          label="Enter the initial guess X1"
+          name="x1"
+          defaultValue="2.0"
+        />
         <div className="item">
-          <label>Enter a function</label>
-          <br />
-          <input
-            type="text"
-            name="function"
-            defaultValue="x²-4"
-            placeholder="x^2 - 4"
-            required
-          />
+          <Button
+            className="calculate-button"
+            type="submit"
+            variant="contained"
+            disableElevation
+          >
+            Calculate
+          </Button>
         </div>
-
-        <div className="item">
-          <label>Enter the tolerance</label>
-          <br />
-          <input
-            type="text"
-            name="tolerance"
-            defaultValue="0.0000001"
-            placeholder="0.0000001"
-            required
-          />
-        </div>
-
-        <div className="item">
-          <label>Enter the number of iterations</label>
-          <br />
-          <input
-            type="text"
-            name="iterations"
-            defaultValue="100"
-            placeholder="100"
-            required
-          />
-        </div>
-
-        <div className="item">
-          <label>Enter the lower limit</label>
-          <br />
-          <input
-            type="text"
-            name="lower_limit"
-            defaultValue="1.5"
-            placeholder="1.5"
-            required
-          />
-        </div>
-
-        <div className="item">
-          <label>Enter the higher limit</label>
-          <br />
-          <input
-            type="text"
-            name="higher_limit"
-            defaultValue="2.0"
-            placeholder="2.0"
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary">
-          Calculate
-        </button>
       </form>
+      {resultComponent && (
+        <div className="result-container">{resultComponent}</div>
+      )}
     </div>
   );
 }
 
-function f(func, x) {
-  return math.evaluate(func, { x });
+function FormInput({ label, name, type = "text", defaultValue }) {
+  return (
+    <div className="item">
+      <label className="text-field">{label}</label>
+      <br />
+      <TextField
+        type={type}
+        name={name}
+        defaultValue={defaultValue}
+        required
+        variant="standard"
+      />
+    </div>
+  );
 }
-type Props = {
-  func: string;
-  tolerancestr: string;
-  iterationsstr: string;
-  x0str: string;
-  x1str: string;
-};
 
-function ElPEep(func, tolerancestr, iterationsstr, x0str, x1str) {
-  const tolerance = parseFloat(tolerancestr, 10);
-  const iterations = parseInt(iterationsstr, 10);
-  const X0Initial = parseFloat(x0str, 10);
-  const X1Initial = parseFloat(x1str, 10);
+function SecantMethod({ func, tolerancestr, iterationsstr, x0str, x1str }) {
+  const tolerance = parseFloat(tolerancestr);
+  const iterations = parseInt(iterationsstr);
+  const X0Initial = parseFloat(x0str);
+  const X1Initial = parseFloat(x1str);
 
   const [result, setResult] = useState(null);
   const [lastFiveIterations, setLastFiveIterations] = useState([]);
@@ -133,7 +119,7 @@ function ElPEep(func, tolerancestr, iterationsstr, x0str, x1str) {
 
       if (fx1 === 0) {
         lastIterations.push({ iteration: i + 1, Xn: X1, fxn: fx1, error: 0 });
-        setResult("Root found at: ${X1}");
+        setResult(`Root found at: ${X1}`);
         setLastFiveIterations(lastIterations.slice(-5));
         return;
       }
@@ -148,7 +134,6 @@ function ElPEep(func, tolerancestr, iterationsstr, x0str, x1str) {
 
       lastIterations.push({ iteration: i + 1, Xn, fxn: f(func, Xn), error });
 
-      // Check if root is found within tolerance
       if (error < tolerance) {
         setResult(`Root found at: ${Xn}`);
         setLastFiveIterations(lastIterations.slice(-5));
@@ -158,7 +143,6 @@ function ElPEep(func, tolerancestr, iterationsstr, x0str, x1str) {
       X0 = X1;
       X1 = Xn;
 
-      // Restrictions for very small values
       if (math.abs(X1) < 1e-10) {
         setResult("Error: Xn values are becoming too small");
         return;
@@ -186,7 +170,7 @@ function ElPEep(func, tolerancestr, iterationsstr, x0str, x1str) {
 
 function IterationTable({ iterations }) {
   return (
-    <table>
+    <table className="table-dark">
       <thead>
         <tr>
           <th>Iteration</th>
@@ -207,4 +191,8 @@ function IterationTable({ iterations }) {
       </tbody>
     </table>
   );
+}
+
+function f(func, x) {
+  return math.evaluate(func, { x });
 }

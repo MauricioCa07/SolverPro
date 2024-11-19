@@ -39,7 +39,7 @@ export function Home() {
           title="Secante"
           description="Método iterativo que utiliza aproximaciones secantes en lugar de derivadas para encontrar la raíz."
           img="assets/Secante.jpg"
-          route="/Secant"
+          route="/secant"
         />
         <Card
           title="Búsqueda"
