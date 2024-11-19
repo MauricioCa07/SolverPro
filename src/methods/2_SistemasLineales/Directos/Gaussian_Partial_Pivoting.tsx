@@ -4,8 +4,15 @@ import Plot from 'react-plotly.js';
 import Navbar from "../../../components/Navbar"; // Importar Navbar
 
 const math = create(all);
-
-export function GaussianPartialPivoting({ matrixA, vectorB, n }: { matrixA: string; vectorB: string; n: string }) {
+export function GaussianPartialPivoting_Main() {
+    return (
+      <>
+        <Navbar />
+        <GaussianPartialPivoting />
+      </>
+    );
+  }
+function GaussianPartialPivoting({ matrixA, vectorB, n }: { matrixA: string; vectorB: string; n: string }) {
     const nVar = parseInt(n, 10);
     const [solution, setSolution] = useState<number[]>([]);
     const [steps, setSteps] = useState<any[]>([]);

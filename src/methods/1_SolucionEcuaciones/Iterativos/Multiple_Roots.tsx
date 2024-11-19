@@ -4,8 +4,15 @@ import Plot from 'react-plotly.js';
 import Navbar from "../../../components/Navbar"; // Importación de Navbar
 
 const math = create(all);
-
-export function MultipleRoots({ funct, firstDerivate, secondDerivate, tolerancestr, iterationsstr, x0str }) {
+export function MultipleRoots_Main() {
+    return (
+      <>
+        <Navbar />
+        <MultipleRoots />
+      </>
+    );
+  }
+function MultipleRoots({ funct, firstDerivate, secondDerivate, tolerancestr, iterationsstr, x0str }) {
     const tolerance = parseFloat(tolerancestr, 10);
     const maxIterations = parseInt(iterationsstr, 10);
     var X0 = parseFloat(x0str, 10);
