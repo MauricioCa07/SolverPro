@@ -18,6 +18,7 @@ import { GaussianTotalPivoting } from "./methods/2_SistemasLineales/Directos/Gau
 import { MultipleRoots } from "./methods/1_SolucionEcuaciones/Iterativos/Multiple_Roots.tsx";
 import { CroutMain } from "./methods/2_SistemasLineales/Directos/Crout.tsx";
 import { GaussSeidelMain } from "./methods/2_SistemasLineales/Iterativos/Gauss_Seidel.tsx";
+import { LagrangeInterpolation_Main } from "./methods/3_Interpolacion/Lagrange.tsx";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
         {/* Métodos: Interpolación */}
         <Route path="/vandermonde" element={<Vandermonde_Main />} />
         <Route path="/trazcub" element={<TrazCub_Main />} />
+        <Route path="/Lagrange" element={<LagrangeInterpolation_Main/>} />
 
         {/* Métodos: Ecuaciones Diferenciales */}
         <Route path="/trapecio-compuesto" element={<TrapecioCompuesto_Main />} />

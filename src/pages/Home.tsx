@@ -113,6 +113,7 @@ export function Home() {
           title="Lagrange"
           description="Method to find the polynomial that passes exactly through a given set of points."
           img="assets/Lagrange.jpg"
+          route="/Lagrange"
         />
         <Card
           title="Newton Divided Differences"
