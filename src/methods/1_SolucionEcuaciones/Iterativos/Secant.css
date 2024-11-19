@@ -1,43 +1,24 @@
 .container {
-  display: flex;
-  flex-wrap: wrap;
-  height: 500px;
-  align-items: center;
-  justify-content: space-between;
+  padding: 20px;
 }
 
 .text-Method {
-  padding-left: 75px;
-  font-weight: bold;
-}
-
-.secant_form {
-  width: 100%;
-}
-
-.item {
-  margin: 30px;
-  padding-left: 100px;
-  padding-right: 100px;
-  align-items: center;
-}
-
-.form-control {
   text-align: center;
 }
 
-.text-field {
-  font-weight: bold;
-  font-size: 35px;
+.calculate-button {
+  margin-top: 20px;
 }
 
-.calculate-button.MuiButton-root {
-  background-color: #2a9d8f !important;
-  color: #ffffff !important;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
+.result-container {
+  margin-top: 40px;
 }
 
-.calculate-button.MuiButton-root:hover {
-  background-color: #51e7bd !important;
+.error-message {
+  color: red;
+  font-weight: bold;
+}
+
+#graph {
+  margin-top: 40px;
 }

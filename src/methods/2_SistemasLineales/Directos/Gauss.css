@@ -1,0 +1,38 @@
+.container {
+  margin-top: 50px;
+  margin: 700px;
+  padding: 700px;
+}
+
+.text-Method {
+  color: #264653;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+/* Button styling */
+.calculate-button {
+  background-color: #2a9d8f !important;
+  color: #fff !important;
+}
+
+/* Accordion styling */
+.MuiAccordion-root {
+  background-color: #e9ecef !important;
+}
+
+/* Typography styling */
+.result-container h4 {
+  color: #264653;
+}
+
+.result-container pre {
+  background-color: #f1f1f1;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+/* Input field styling */
+.MuiTextField-root {
+  margin: 5px;
+}

@@ -6,6 +6,7 @@ import { Secant_Main } from "./methods/1_SolucionEcuaciones/Iterativos/Secant.ts
 import { Bisection_Main } from "./methods/1_SolucionEcuaciones/Directos/Bisection.tsx";
 import { FrMain } from "./methods/1_SolucionEcuaciones/Directos/False_Rule.tsx";
 import { SearchMain } from "./methods/1_SolucionEcuaciones/Iterativos/Search.tsx";
+import { Gauss_Main } from "./methods/2_SistemasLineales/Directos/Gauss.tsx";
 
 function App() {
   return (
@@ -17,7 +18,8 @@ function App() {
         <Route path="/secant" element={<Secant_Main />}></Route>
         <Route path="/biseccion" element={<Bisection_Main />}></Route>
         <Route path="/Falserule" element={<FrMain />}></Route>
-        <Route path="/Search" element={<SearchMain/>}></Route>
+        <Route path="/Search" element={<SearchMain />}></Route>
+        <Route path="/gauss" element={<Gauss_Main />}></Route>
       </Routes>
     </Router>
   );

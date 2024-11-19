@@ -1,9 +1,20 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { create, all } from "mathjs";
 import Navbar from "../../../components/Navbar";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import "./Secant.css";
+import Form_Input from "../../../components/Form_Inpunt";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
+import functionPlot from "function-plot";
+import "./Secant.css"; // Custom CSS for styling
 
 const math = create(all);
 
@@ -11,12 +22,12 @@ export function Secant_Main() {
   return (
     <>
       <Navbar />
-      <SecantForm />
+      <Form />
     </>
   );
 }
 
-function SecantForm() {
+function Form() {
   const [resultComponent, setResultComponent] = useState(null);
 
   function handleSubmit(e) {
@@ -24,46 +35,45 @@ function SecantForm() {
     const formData = new FormData(e.target);
     const formJson = Object.fromEntries(formData.entries());
 
-    const props = {
-      func: formJson["function"],
-      tolerancestr: formJson["tolerance"],
-      iterationsstr: formJson["iterations"],
-      x0str: formJson["x0"],
-      x1str: formJson["x1"],
-    };
-
-    setResultComponent(<SecantMethod {...props} />);
+    setResultComponent(
+      <SecantMethod
+        func={formJson.function}
+        tolerancestr={formJson.tolerance}
+        iterationsstr={formJson.iterations}
+        x0str={formJson.x0}
+        x1str={formJson.x1}
+      />
+    );
   }
 
   return (
     <div className="container">
       <h1 className="text-Method">Secant Method</h1>
       <form onSubmit={handleSubmit}>
-        <FormInput
+        <Form_Input
           label="Enter a function"
           name="function"
-          defaultValue="x^2-4"
+          defaultValue="log(sin(x)^2 + 1) - (1/2)"
         />
-        <FormInput
+        <Form_Input
           label="Enter the tolerance"
           name="tolerance"
           defaultValue="1e-7"
         />
-        <FormInput
+        <Form_Input
           label="Enter the number of iterations"
           name="iterations"
-          type="number"
           defaultValue="100"
         />
-        <FormInput
+        <Form_Input
           label="Enter the initial guess X0"
           name="x0"
-          defaultValue="1.5"
+          defaultValue="0.5"
         />
-        <FormInput
+        <Form_Input
           label="Enter the initial guess X1"
           name="x1"
-          defaultValue="2.0"
+          defaultValue="1"
         />
         <div className="item">
           <Button
@@ -83,122 +93,199 @@ function SecantForm() {
   );
 }
 
-function FormInput({ label, name, type = "text", defaultValue }) {
-  return (
-    <div className="item">
-      <label className="text-field">{label}</label>
-      <br />
-      <TextField
-        type={type}
-        name={name}
-        defaultValue={defaultValue}
-        required
-        variant="standard"
-      />
-    </div>
-  );
+interface SecantMethodProps {
+  func: string;
+  tolerancestr: string;
+  iterationsstr: string;
+  x0str: string;
+  x1str: string;
 }
 
-function SecantMethod({ func, tolerancestr, iterationsstr, x0str, x1str }:Props) {
-  const tolerance = parseFloat(tolerancestr);
-  const iterations = parseInt(iterationsstr);
-  const X0Initial = parseFloat(x0str);
-  const X1Initial = parseFloat(x1str);
-
-  const [result, setResult] = useState(null);
-  const [lastFiveIterations, setLastFiveIterations] = useState([]);
+function SecantMethod({
+  func,
+  tolerancestr,
+  iterationsstr,
+  x0str,
+  x1str,
+}: SecantMethodProps) {
+  const [result, setResult] = useState<string | null>(null);
+  const [iterationsData, setIterationsData] = useState<any[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    let X0 = X0Initial;
-    let X1 = X1Initial;
-    let lastIterations = [];
+    try {
+      // Parse and validate inputs
+      const tolerance = parseFloat(tolerancestr);
+      const iterations = parseInt(iterationsstr);
+      let X0 = parseFloat(x0str);
+      let X1 = parseFloat(x1str);
 
-    for (let i = 0; i < iterations; i++) {
-      const fx0 = f(func, X0);
-      const fx1 = f(func, X1);
-
-      if (fx1 === 0) {
-        lastIterations.push({ iteration: i + 1, Xn: X1, fxn: fx1, error: 0 });
-        setResult(`Root found at: ${X1}`);
-        setLastFiveIterations(lastIterations.slice(-5));
+      if (
+        isNaN(tolerance) ||
+        isNaN(iterations) ||
+        isNaN(X0) ||
+        isNaN(X1) ||
+        !func
+      ) {
+        setErrorMessage("Please enter valid numerical values.");
         return;
       }
 
-      if (fx1 - fx0 === 0) {
-        setResult("Error: Division by 0");
+      if (tolerance <= 0) {
+        setErrorMessage("Tolerance must be greater than zero.");
         return;
       }
 
-      const Xn = X1 - (fx1 * (X1 - X0)) / (fx1 - fx0);
-      const error = math.abs(Xn - X1);
-
-      lastIterations.push({ iteration: i + 1, Xn, fxn: f(func, Xn), error });
-
-      if (error < tolerance) {
-        setResult("Root found at: ${Xn}");
-        setLastFiveIterations(lastIterations.slice(-5));
+      if (iterations <= 0) {
+        setErrorMessage("Iterations must be a positive integer.");
         return;
       }
 
-      X0 = X1;
-      X1 = Xn;
+      // Compile the function once
+      const compiledFunction = math.compile(func);
 
-      if (math.abs(X1) < 1e-10) {
-        setResult("Error: Xn values are becoming too small");
-        return;
+      // Define the function evaluation using the compiled function
+      function f(x: number) {
+        try {
+          return compiledFunction.evaluate({ x });
+        } catch (error: any) {
+          throw new Error(
+            `Error evaluating function at x = ${x}: ${error.message}`
+          );
+        }
       }
 
-      if (math.abs(fx1) < 1e-10) {
-        setResult(
-          "Error: Function values are approaching 0, potentially unstable"
-        );
-        return;
+      let iterationsArray = [];
+
+      for (let i = 0; i < iterations + 1; i++) {
+        const fx0 = f(X0);
+        const fx1 = f(X1);
+
+        if (fx1 === 0) {
+          iterationsArray.push({
+            iteration: i,
+            Xn: X1,
+            fxn: fx1,
+            error: 0,
+          });
+          setResult(`Root found at: ${X1}`);
+          setIterationsData(iterationsArray);
+          return;
+        }
+
+        if (fx1 - fx0 === 0) {
+          setErrorMessage("Error: Division by zero in denominator.");
+          return;
+        }
+
+        const Xn = X1 - (fx1 * (X1 - X0)) / (fx1 - fx0);
+        var error;
+        if (i >= 2) {
+          error = math.abs(Xn - X1);
+        } else {
+          error = Infinity;
+        }
+
+        iterationsArray.push({
+          iteration: i,
+          Xn,
+          fxn: f(Xn),
+          error,
+        });
+
+        if (error < tolerance) {
+          setResult(`Root found at: ${Xn}`);
+          setIterationsData(iterationsArray);
+          return;
+        }
+
+        X0 = X1;
+        X1 = Xn;
       }
+
+      setResult(`No root found after ${iterations} iterations.`);
+      setIterationsData(iterationsArray);
+    } catch (error: any) {
+      setErrorMessage(`An error occurred: ${error.message}`);
     }
-
-    setResult(`No root found after ${iterations} iterations.`);
-    setLastFiveIterations(lastIterations.slice(-5));
-  }, [func, tolerance, iterations, X0Initial, X1Initial]);
+  }, [func, tolerancestr, iterationsstr, x0str, x1str]);
 
   return (
     <div>
-      <h1>{result}</h1>
-      <IterationTable iterations={lastFiveIterations} />
+      {errorMessage ? (
+        <div className="error-message">
+          <h2>Error</h2>
+          <p>{errorMessage}</p>
+        </div>
+      ) : (
+        <>
+          <h1>{result}</h1>
+          <IterationTable iterations={iterationsData} />
+          <FunctionGraph func={func} iterations={iterationsData} />
+        </>
+      )}
     </div>
   );
 }
 
 function IterationTable({ iterations }) {
   return (
-    <table className="table-dark">
-      <thead>
-        <tr>
-          <th>Iteration</th>
-          <th>Xn</th>
-          <th>F(Xn)</th>
-          <th>Error</th>
-        </tr>
-      </thead>
-      <tbody>
-        {iterations.map((row, index) => (
-          <tr key={index}>
-            <td>{row.iteration}</td>
-            <td>{row.Xn}</td>
-            <td>{row.fxn}</td>
-            <td>{row.error}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <TableContainer component={Paper}>
+      <Table aria-label="iteration table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Iteration</TableCell>
+            <TableCell>Xn</TableCell>
+            <TableCell>F(Xn)</TableCell>
+            <TableCell>Error</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {iterations.map((row, index) => (
+            <TableRow key={index}>
+              <TableCell>{row.iteration}</TableCell>
+              <TableCell>{row.Xn.toFixed(6)}</TableCell>
+              <TableCell>{row.fxn.toExponential(6)}</TableCell>
+              <TableCell>{row.error.toExponential(6)}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 }
 
+function FunctionGraph({ func, iterations }) {
+  useEffect(() => {
+    try {
+      // Determine the domain based on iteration values
+      let xValues = iterations.map((row) => row.Xn);
+      let minX = Math.min(...xValues) - 1;
+      let maxX = Math.max(...xValues) + 1;
 
-type Propsf={
-  func:string;
-  x: string;
-}
+      functionPlot({
+        target: "#graph",
+        width: 800,
+        height: 400,
+        xAxis: { domain: [minX, maxX] },
+        data: [
+          {
+            fn: func,
+            sampler: "builtIn",
+            graphType: "polyline",
+          },
+          {
+            points: iterations.map((row) => [row.Xn, row.fxn]),
+            fnType: "points",
+            graphType: "scatter",
+            color: "red",
+          },
+        ],
+      });
+    } catch (error) {
+      console.error("Error plotting function:", error);
+    }
+  }, [func, iterations]);
 
-function f({func, x}:Propsf) {
-  return math.evaluate(func, { x });
+  return <div id="graph"></div>;
 }
