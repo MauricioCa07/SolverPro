@@ -30,6 +30,7 @@ export function Home() {
           title="Multiple Roots"
           description="Extension of the Newton's method to handle cases with multiple or degenerate roots."
           img="assets/Raices_Multiples.jpg"
+          route="/MultipleRoots"
         />
         <Card
           title="Newton"
@@ -69,11 +70,13 @@ export function Home() {
           title="Gauss Partial Pivoting"
           description="Gaussian elimination with partial row reordering for greater stability."
           img="assets/Gaussiana_Pivoteo.jpg"
+          route="/gaussian-partial-pivoting"
         />
         <Card
           title="Gauss Total Pivoting"
           description="Gaussian elimination with complete row and column reordering for maximum accuracy."
           img="assets/Gaussiana_Pivoteo_Total.jpg"
+          route="/gaussian-total-pivoting"
         />
         <Card
           title="Partial LU"
