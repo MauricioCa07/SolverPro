@@ -3,6 +3,8 @@ import { create, all, abs, evaluate, format } from "mathjs";
 import Navbar from "../../../components/Navbar";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 import functionPlot from "function-plot";
 import "./Newton.css";
 
@@ -21,20 +23,36 @@ function NewtonForm() {
   const [resultComponent, setResultComponent] = useState<JSX.Element | null>(
     null
   );
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
     const formJson = Object.fromEntries(formData.entries());
 
+    const initialGuess = parseFloat(formJson["initial_guess"] as string);
+    const tolerance = parseFloat(formJson["tolerance"] as string);
+
+    // Validations
+    if (isNaN(initialGuess) || isNaN(tolerance)) {
+      setErrorMessage("Initial guess and tolerance must be valid numbers.");
+      return;
+    }
+    if (tolerance <= 0) {
+      setErrorMessage("Tolerance must be a positive number.");
+      return;
+    }
+
     const props = {
       func: formJson["function"] as string,
       derivFunc: formJson["derivative"] as string,
-      initialGuess: parseFloat(formJson["initial_guess"] as string),
-      tolerance: parseFloat(formJson["tolerance"] as string),
+      initialGuess,
+      tolerance,
     };
 
-    setResultComponent(<NewtonMethod {...props} />);
+    setResultComponent(
+      <NewtonMethod {...props} setErrorMessage={setErrorMessage} />
+    );
   }
 
   return (
@@ -75,6 +93,19 @@ function NewtonForm() {
       {resultComponent && (
         <div className="result-container">{resultComponent}</div>
       )}
+      <Snackbar
+        open={!!errorMessage}
+        autoHideDuration={6000}
+        onClose={() => setErrorMessage(null)}
+      >
+        <Alert
+          onClose={() => setErrorMessage(null)}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {errorMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
@@ -110,11 +141,13 @@ function NewtonMethod({
   derivFunc,
   initialGuess,
   tolerance,
+  setErrorMessage,
 }: {
   func: string;
   derivFunc: string;
   initialGuess: number;
   tolerance: number;
+  setErrorMessage: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
   const [iterationsData, setIterationsData] = useState<
     { iteration: number; xi: number; fxi: number; error: number }[]
@@ -123,51 +156,64 @@ function NewtonMethod({
   const graphRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const data: { iteration: number; xi: number; fxi: number; error: number }[] =
-      [];
+    const data: {
+      iteration: number;
+      xi: number;
+      fxi: number;
+      error: number;
+    }[] = [];
     let xi = initialGuess;
     let error = Infinity;
     let iteration = 0;
 
-    while (error > tolerance && iteration < 100) {
-      const fxi = safeEvaluate(func, xi);
-      const dfxi = safeEvaluate(derivFunc, xi);
+    try {
+      while (error > tolerance && iteration < 100) {
+        const fxi = safeEvaluate(func, xi);
+        const dfxi = safeEvaluate(derivFunc, xi);
 
-      if (dfxi === 0) {
-        setResult("Error: Derivative is zero at some point.");
-        break;
+        if (isNaN(fxi) || isNaN(dfxi)) {
+          setErrorMessage("Invalid function or derivative evaluation.");
+          return;
+        }
+
+        if (dfxi === 0) {
+          setErrorMessage("Error: Derivative is zero at some point.");
+          return;
+        }
+
+        const nextXi = xi - fxi / dfxi;
+        error = abs(nextXi - xi);
+
+        data.push({
+          iteration: iteration + 1,
+          xi,
+          fxi,
+          error,
+        });
+
+        if (fxi === 0) {
+          setResult(`Root found at x = ${format(nextXi, { precision: 10 })}`);
+          break;
+        }
+
+        xi = nextXi;
+        iteration++;
       }
 
-      const nextXi = xi - fxi / dfxi;
-      error = abs(nextXi - xi);
-
-      data.push({
-        iteration: iteration + 1,
-        xi,
-        fxi,
-        error,
-      });
-
-      if (fxi === 0) {
-        setResult(`Root found at x = ${format(nextXi, { precision: 10 })}`);
-        break;
+      if (iteration >= 100) {
+        setErrorMessage("Max iterations reached. No root found.");
+      } else if (!result) {
+        setResult(
+          `Approximation: x = ${format(xi, { precision: 10 })}, Error: ${error}`
+        );
       }
 
-      xi = nextXi;
-      iteration++;
+      setIterationsData(data);
+      plotFunction(func, initialGuess);
+    } catch (err) {
+      setErrorMessage("An error occurred during the calculation.");
     }
-
-    if (iteration >= 100) {
-      setResult("Max iterations reached. No root found.");
-    } else if (!result) {
-      setResult(
-        `Approximation: x = ${format(xi, { precision: 10 })}, Error: ${error}`
-      );
-    }
-
-    setIterationsData(data);
-    plotFunction(func, initialGuess);
-  }, [func, derivFunc, initialGuess, tolerance]);
+  }, [func, derivFunc, initialGuess, tolerance, setErrorMessage]);
 
   const plotFunction = (func: string, xStart: number) => {
     if (graphRef.current) {
@@ -193,7 +239,7 @@ function NewtonMethod({
           ],
         });
       } catch (err) {
-        console.error("Error plotting the function: ", err);
+        setErrorMessage("Error plotting the function.");
       }
     }
   };
