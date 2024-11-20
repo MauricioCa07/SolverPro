@@ -50,7 +50,7 @@ function BisectionForm() {
 
   return (
     <div className="container">
-      <h1 className="text-Method">Método de Bisección</h1>
+      <h1 className="text-Method">Bisection Method</h1>
       <form id="bisection-form" onSubmit={handleSubmit}>
         <FormInput
           label="Ingresa una función"
@@ -67,11 +67,7 @@ function BisectionForm() {
           name="higher_limit"
           defaultValue="2.0"
         />
-        <FormInput
-          label="Tolerancia"
-          name="tolerance"
-          defaultValue="1e-7"
-        />
+        <FormInput label="Tolerancia" name="tolerance" defaultValue="1e-7" />
         <FormInput
           label="Número de iteraciones"
           name="iterations"
@@ -88,7 +84,9 @@ function BisectionForm() {
           </Button>
         </div>
       </form>
-      {resultComponent && <div className="result-container">{resultComponent}</div>}
+      {resultComponent && (
+        <div className="result-container">{resultComponent}</div>
+      )}
       {canPlot && (
         <GraphFunction
           func={func}
@@ -118,7 +116,14 @@ function FormInput({ label, name, type = "text", defaultValue }) {
 }
 
 function BisectionMethod(props) {
-  const { func, lowerLimitStr, higherLimitStr, toleranceStr, iterationsStr, setRootPoint } = props;
+  const {
+    func,
+    lowerLimitStr,
+    higherLimitStr,
+    toleranceStr,
+    iterationsStr,
+    setRootPoint,
+  } = props;
 
   const lowerLimit = parseFloat(lowerLimitStr);
   const higherLimit = parseFloat(higherLimitStr);
