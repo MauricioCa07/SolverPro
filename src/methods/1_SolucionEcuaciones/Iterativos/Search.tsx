@@ -1,141 +1,234 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { create, all } from "mathjs";
-import { useState, useEffect } from "react";
 import Navbar from "../../../components/Navbar";
-import Plot from "react-plotly.js";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import "./Search.css";
+import functionPlot from "function-plot";
 
 const math = create(all);
 
-export function SearchMain() {
+export function Search_Main() {
   return (
     <>
       <Navbar />
-      <MathForm />
+      <SearchForm />
     </>
   );
 }
 
-function MathForm() {
-  function handleSubmit(e) {
+function SearchForm() {
+  const [resultComponent, setResultComponent] = useState<JSX.Element | null>(
+    null
+  );
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
-    const form = e.target;
-    const formData = new FormData(form);
-
+    const formData = new FormData(e.target as HTMLFormElement);
     const formJson = Object.fromEntries(formData.entries());
-    Search(
-      formJson.function,
-      formJson.start,
-      formJson.step,
-      formJson.iterations
-    );
-    console.log(formJson);
+
+    const props = {
+      func: formJson["function"] as string,
+      startStr: formJson["start"] as string,
+      stepStr: formJson["step"] as string,
+      iterationsStr: formJson["iterations"] as string,
+    };
+
+    setResultComponent(<SearchMethod {...props} />);
   }
+
   return (
     <div className="container">
-      <h1 className="text-Method">Incremental search method</h1>
-      <form method="post" onSubmit={handleSubmit}>
+      <h1 className="text-Method">Incremental Search Method</h1>
+      <form onSubmit={handleSubmit}>
+        <FormInput
+          label="Enter a function"
+          name="function"
+          defaultValue="x^2 - 4"
+        />
+        <FormInput
+          label="Enter the start value"
+          name="start"
+          defaultValue="0"
+        />
+        <FormInput
+          label="Enter the step size"
+          name="step"
+          defaultValue="1"
+        />
+        <FormInput
+          label="Enter the maximum iterations"
+          name="iterations"
+          defaultValue="100"
+        />
         <div className="item">
-          <label>Enter a function</label>
-          <br />
-          <input
-            type="text"
-            name="function"
-            defaultValue="x²-4"
-            placeholder="x^2 - 4"
-            required
-          />
+          <Button
+            className="calculate-button"
+            type="submit"
+            variant="contained"
+            disableElevation
+          >
+            Calculate
+          </Button>
         </div>
-
-        <div className="item">
-          <label>Enter the start number for the search</label>
-          <br />
-          <input
-            type="text"
-            name="start"
-            defaultValue="0"
-            placeholder="0"
-            required
-          />
-        </div>
-
-        <div className="item">
-          <label>Enter the size of interval</label>
-          <br />
-          <input
-            type="text"
-            name="Step"
-            defaultValue="1"
-            placeholder="1"
-            required
-          />
-        </div>
-
-        <div className="item">
-          <label>Enter the maximum iterations</label>
-          <br />
-          <input
-            type="text"
-            name="iterations"
-            defaultValue="100"
-            placeholder="100"
-            required
-          />
-        </div>
-        <button type="submit" className="btn btn-primary">
-          Calculate
-        </button>
       </form>
+      {resultComponent && (
+        <div className="result-container">{resultComponent}</div>
+      )}
     </div>
   );
 }
 
-function f(func: string, x: number): number {
-  return math.evaluate(func, { x });
-}
-
-interface SearchProps {
-  f: string; // La función como string, por ejemplo "x^2 - 4"
-  x0string: string; // Valor inicial como string
-  hstring: string; // Incremento como string
-  Nmaxstring: string; // Número máximo de iteraciones como string
-}
-
-export function Search(func, x0string, hstring, Nmaxstring) {
-  const x0: number = parseFloat(x0string);
-  const h: number = parseFloat(hstring);
-  const Nmax: number = parseInt(Nmaxstring, 10);
-
-  const [result, setResult] = useState(null);
-  const [lastFiveIterations, setLastFiveIterations] = useState([]);
-
-  let xinf: number = x0;
-  let yinf: number = f(func, xinf);
-  let xsup: number = xinf + h;
-  let ysup: number = f(func, xsup);
-
-  useEffect(() => {
-    for (let i = 1; i <= Nmax; i++) {
-      if (yinf * ysup <= 0) {
-        return (
-          <h1>
-            Root at the interval between {xinf} and {xsup} in {i} iterations
-          </h1>
-        ); // Si hay cambio de signo, retornamos los resultados
-      }
-      xinf = xsup;
-      yinf = ysup;
-      xsup = xinf + h;
-      ysup = f(func, xsup); // Corregí esto también, faltaba pasar `func`
-    }
-  }, [func, x0string, hstring, Nmaxstring]);
-
+function FormInput({
+  label,
+  name,
+  type = "text",
+  defaultValue,
+}: {
+  label: string;
+  name: string;
+  type?: string;
+  defaultValue: string;
+}) {
   return (
-    <h1>
-      Could not find a sign switch for the function in the given maximum
-      iterations
-    </h1>
+    <div className="item">
+      <label className="text-field">{label}</label>
+      <br />
+      <TextField
+        type={type}
+        name={name}
+        defaultValue={defaultValue}
+        required
+        variant="standard"
+      />
+    </div>
   );
 }
 
-export default Search;
+function SearchMethod({
+  func,
+  startStr,
+  stepStr,
+  iterationsStr,
+}: {
+  func: string;
+  startStr: string;
+  stepStr: string;
+  iterationsStr: string;
+}) {
+  const start = parseFloat(startStr);
+  const step = parseFloat(stepStr);
+  const maxIterations = parseInt(iterationsStr, 10);
+
+  const [iterationsData, setIterationsData] = useState<
+    { iteration: number; xInf: number; xSup: number; yInf: number; ySup: number }[]
+  >([]);
+  const graphRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let xInf = start;
+    let yInf = f(func, xInf);
+    let xSup = xInf + step;
+    let ySup = f(func, xSup);
+    const data: { iteration: number; xInf: number; xSup: number; yInf: number; ySup: number }[] = [];
+
+    for (let i = 1; i <= maxIterations; i++) {
+      data.push({ iteration: i, xInf, xSup, yInf, ySup });
+
+      if (yInf * ySup <= 0) {
+        setIterationsData(data);
+        plotFunction(func, start, xSup);
+        return;
+      }
+
+      xInf = xSup;
+      yInf = ySup;
+      xSup = xInf + step;
+      ySup = f(func, xSup);
+    }
+
+    setIterationsData(data);
+    plotFunction(func, start, xSup);
+  }, [func, start, step, maxIterations]);
+
+  const plotFunction = (func: string, xStart: number, xEnd: number) => {
+    if (graphRef.current) {
+      graphRef.current.innerHTML = ""; // Clear previous graph
+
+      const width = 800;
+      const height = 400;
+      const xDomain = [xStart - (xEnd - xStart) * 0.5, xEnd + (xEnd - xStart) * 0.5];
+
+      try {
+        functionPlot({
+          target: graphRef.current,
+          width,
+          height,
+          xAxis: { domain: xDomain },
+          yAxis: { label: "f(x)" },
+          grid: true,
+          data: [
+            {
+              fn: func,
+              color: "blue",
+            },
+          ],
+        });
+      } catch (err) {
+        console.error("Error plotting the function: ", err);
+      }
+    }
+  };
+
+  return (
+    <div>
+      <IterationTable iterations={iterationsData} />
+      <div ref={graphRef} className="graph-container"></div>
+    </div>
+  );
+}
+
+function IterationTable({
+  iterations,
+}: {
+  iterations: {
+    iteration: number;
+    xInf: number;
+    xSup: number;
+    yInf: number;
+    ySup: number;
+  }[];
+}) {
+  return (
+    <table className="table-dark">
+      <thead>
+        <tr>
+          <th>Iteration</th>
+          <th>xInf</th>
+          <th>yInf</th>
+          <th>xSup</th>
+          <th>ySup</th>
+        </tr>
+      </thead>
+      <tbody>
+        {iterations.map((row, index) => (
+          <tr key={index}>
+            <td>{row.iteration}</td>
+            <td>{row.xInf.toFixed(4)}</td>
+            <td>{row.yInf.toFixed(4)}</td>
+            <td>{row.xSup.toFixed(4)}</td>
+            <td>{row.ySup.toFixed(4)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function f(func: string, x: number): number {
+  try {
+    return math.evaluate(func, { x });
+  } catch {
+    return NaN;
+  }
+}
