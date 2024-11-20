@@ -13,7 +13,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Navbar from "../../../components/Navbar";
 import Plot from "react-plotly.js";
-import "./Doolittle.css";
+import "./Doolitle.css";
 
 export function Doolittle_Main() {
   return (
