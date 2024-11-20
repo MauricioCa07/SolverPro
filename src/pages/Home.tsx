@@ -24,6 +24,7 @@ export function Home() {
           title="Fixed Point"
           description="Iterative method that reformulates the equation to find a point where \( g(x) = x \)."
           img="assets/Punto_Fijo.jpg"
+          route="./FixedPoint"
         />
         <Card
           title="Multiple Roots"
