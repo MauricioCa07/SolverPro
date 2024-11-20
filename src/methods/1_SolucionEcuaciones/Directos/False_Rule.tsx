@@ -1,51 +1,52 @@
 import { create, all } from "mathjs";
-import { useState, useEffect } from "react";
-const math = create(all);
+import { useState } from "react";
 import Navbar from "../../../components/Navbar";
+import "./falserule.css";
 
+const math = create(all);
 
-export function FrMain(){
-  return(
+export function FrMain() {
+  return (
     <>
-      <Navbar/>
-      <MathForm/>
+      <Navbar />
+      <MathForm />
     </>
   );
 }
 
 function MathForm() {
+  const [formData, setFormData] = useState(null);
+
   function handleSubmit(e) {
     e.preventDefault();
 
     const form = e.target;
-    const formData = new FormData(form);
+    const data = new FormData(form);
+    const formJson = Object.fromEntries(data.entries());
 
-    const formJson = Object.fromEntries(formData.entries());
-    Falserule(
-      formJson.function,
-      formJson.x0,
-      formJson.x1,
-      formJson.tolerance,
-      formJson.Maxiterations
-    );
-    console.log(formJson);
+    setFormData({
+      func: formJson.function,
+      x0: parseFloat(formJson.x0),
+      x1: parseFloat(formJson.x1),
+      tolerance: parseFloat(formJson.tolerance),
+      Maxiterations: parseInt(formJson.Maxiterations, 10),
+    });
   }
+
   return (
     <div className="container">
-      <h1 className="text-Method">False rule method for root aproximation</h1>
-      <form method="post" onSubmit={handleSubmit}>
+      <h1 className="text-Method">False rule method for root approximation</h1>
+      <form onSubmit={handleSubmit}>
         <div className="item">
           <label>Enter a function</label>
           <br />
           <input
             type="text"
             name="function"
-            defaultValue="x²-4"
-            placeholder="x^2 - 4"
+            defaultValue="x^2 - 4"
             required
           />
         </div>
-
         <div className="item">
           <label>Enter the tolerance</label>
           <br />
@@ -53,11 +54,9 @@ function MathForm() {
             type="text"
             name="tolerance"
             defaultValue="0.0000001"
-            placeholder="0.0000001"
             required
           />
         </div>
-
         <div className="item">
           <label>Enter the number of iterations</label>
           <br />
@@ -65,11 +64,9 @@ function MathForm() {
             type="text"
             name="Maxiterations"
             defaultValue="100"
-            placeholder="100"
             required
           />
         </div>
-
         <div className="item">
           <label>Enter the lower value</label>
           <br />
@@ -77,11 +74,9 @@ function MathForm() {
             type="text"
             name="x0"
             defaultValue="1.5"
-            placeholder="1.5"
             required
           />
         </div>
-
         <div className="item">
           <label>Enter the higher value</label>
           <br />
@@ -89,7 +84,6 @@ function MathForm() {
             type="text"
             name="x1"
             defaultValue="2.0"
-            placeholder="2.0"
             required
           />
         </div>
@@ -97,67 +91,79 @@ function MathForm() {
           Calculate
         </button>
       </form>
+      {/* Render the results */}
+      {formData && (
+        <Falserule
+          func={formData.func}
+          x0={formData.x0}
+          x1={formData.x1}
+          tolerance={formData.tolerance}
+          Maxiterations={formData.Maxiterations}
+        />
+      )}
     </div>
   );
 }
 
-
-function f(func, x) {
-  return math.evaluate(func, { x });
-}
-
-export function Falserule(
-  func,
-  astring,
-  bstring,
-  tolstring,
-  Nmaxstring,
-) {
-
+function Falserule({ func, x0, x1, tolerance, Maxiterations }) {
+  const [iterations, setIterations] = useState([]);
   const [result, setResult] = useState(null);
-  const [lastIterations, setLastIterations] = useState([]);
 
-useEffect(() => {
-  let a = parseFloat(astring, 10);
-  let b = parseFloat(bstring, 10);
-  const tol = parseFloat(tolstring, 10);
-  const Nmax = parseInt(Nmaxstring, 10);
+  const calculateFalseRule = () => {
+    let a = x0;
+    let b = x1;
+    const tol = tolerance;
+    const Nmax = Maxiterations;
 
-  let fa = f(func, a);
-  let fb = f(func, b);
-  let pm = (fb * a - fa * b) / (fb - fa);
-  let fpm = f(func, pm);
-  let E = 1000;
-  let cont = 1;
+    let fa = f(func, a);
+    let fb = f(func, b);
+    let pm = (fb * a - fa * b) / (fb - fa);
+    let fpm = f(func, pm);
+    let E = 1000;
+    let cont = 1;
 
-  while (E > tol && cont < Nmax) {
-    if (fa * fpm < 0) {
-      b = pm;
-      fb = fpm;
-    } else {
-      a = pm;
-      fa = fpm;
+    const iterationResults = [];
+
+    while (E > tol && cont <= Nmax) {
+      if (fa * fpm < 0) {
+        b = pm;
+        fb = fpm;
+      } else {
+        a = pm;
+        fa = fpm;
+      }
+
+      let p0 = pm;
+      pm = (fb * a - fa * b) / (fb - fa);
+      fpm = f(func, pm);
+      E = Math.abs(pm - p0);
+
+      iterationResults.push({
+        iteration: cont,
+        a: a.toFixed(6),
+        b: b.toFixed(6),
+        pm: pm.toFixed(6),
+        error: E.toFixed(6),
+      });
+
+      cont++;
     }
 
-    let p0 = pm;
-    pm = (fb * a - fa * b) / (fb - fa);
-    fpm = f(func, pm);
-    E = Math.abs(pm - p0);
+    setIterations(iterationResults);
+    setResult(pm);
+  };
 
-    cont++;
-    setResult(`Root aproximation at ${pm}`);
-    console.log(`Root aproximation at ${pm}`);
-    lastIterations.push({iteration: cont+1, a: a, b: b, pm:pm, error: E});
-    setLastIterations(lastIterations);
-  }
-}, [func, astring, bstring, tolstring, Nmaxstring,]);
+  // Run the calculation when the component mounts
+  useState(() => {
+    calculateFalseRule();
+  }, []); // Empty dependency array ensures it runs once
 
   return (
     <div>
-    <h1>{result}</h1>
-      <IterationTable iterations = {lastIterations}/>
+      <h2>False Rule Method Result</h2>
+      <p>Root approximation: {result && result.toFixed(6)}</p>
+      <IterationTable iterations={iterations} />
     </div>
-      
   );
 }
 
@@ -166,7 +172,7 @@ function IterationTable({ iterations }) {
     <table>
       <thead>
         <tr>
-          <th>iteration</th>
+          <th>Iteration</th>
           <th>a</th>
           <th>b</th>
           <th>pm</th>
@@ -184,6 +190,12 @@ function IterationTable({ iterations }) {
           </tr>
         ))}
       </tbody>
+      <p>Please reload page to change parameters</p>
     </table>
+    
   );
+}
+
+function f(func, x) {
+  return math.evaluate(func, { x });
 }
