@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Navbar from "../../../components/Navbar";
-import "./GaussianPartialPivoting.css";
+import "./Gaussian_Partial_Pivoting.css";
 
 export function GaussianPartialPivoting_Main() {
   return (

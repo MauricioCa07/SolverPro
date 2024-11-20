@@ -13,7 +13,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Navbar from "../../../components/Navbar";
 import Plot from "react-plotly.js";
-import "./GaussianTotalPivoting.css";
+import "./Gaussian_Total_Pivoting.css";
 
 export function GaussianTotalPivoting_Main() {
   return (
