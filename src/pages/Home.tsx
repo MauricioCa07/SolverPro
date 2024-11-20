@@ -124,6 +124,7 @@ export function Home() {
           title="Simpson"
           description="Numerical method to calculate integrals by approximating the function with quadratic polynomials."
           img="assets/Simpson.jpg"
+          route="/Simpson"
         />
       </div>
 
@@ -133,6 +134,7 @@ export function Home() {
           title="Euler"
           description="Simple step method to approximate solutions of ordinary differential equations."
           img="assets/Euler.jpg"
+          route="/Euler"
         />
       </div>
     </>

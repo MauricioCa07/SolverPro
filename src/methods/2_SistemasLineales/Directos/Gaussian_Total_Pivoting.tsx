@@ -4,14 +4,16 @@ import Plot from 'react-plotly.js';
 import Navbar from "../../../components/Navbar"; // Importar Navbar
 
 const math = create(all);
+
 export function GaussianTotalPivoting_Main() {
     return (
-      <>
-        <Navbar />
-        <GaussianTotalPivoting />
-      </>
+        <>
+            <Navbar />
+            <GaussianTotalPivoting />
+        </>
     );
-  }
+}
+
 function GaussianTotalPivoting({ matrixA, vectorB, n }: { matrixA: string; vectorB: string; n: string }) {
     const nVar = parseInt(n, 10);
     const [solution, setSolution] = useState<number[]>([]);
@@ -106,7 +108,7 @@ function GaussianTotalPivoting({ matrixA, vectorB, n }: { matrixA: string; vecto
                 for (let j = i + 1; j < nVar; j++) {
                     sum += augmentedMatrix.get([i, j]) * x[columnSwaps[j]];
                 }
-                x[columnSwaps[i]] = (augmentedMatrix.get([i, nVar]) - sum) / augmentedMatrix.get([i, i]];
+                x[columnSwaps[i]] = (augmentedMatrix.get([i, nVar]) - sum) / augmentedMatrix.get([i, i]);
                 x[columnSwaps[i]] = Math.round(x[columnSwaps[i]] * 1e10) / 1e10; // Avoid floating-point issues
             }
 

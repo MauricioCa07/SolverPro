@@ -19,6 +19,8 @@ import { MultipleRoots_Main } from "./methods/1_SolucionEcuaciones/Iterativos/Mu
 import { CroutMain } from "./methods/2_SistemasLineales/Directos/Crout.tsx";
 import { GaussSeidelMain } from "./methods/2_SistemasLineales/Iterativos/Gauss_Seidel.tsx";
 import { LagrangeInterpolation_Main } from "./methods/3_Interpolacion/Lagrange.tsx";
+import { Euler_Main } from "./methods/4_EcuacionesDiferenciales/Euler.tsx";
+import { Simpson_Main } from "./methods/3_Interpolacion/Simpson.tsx";
 
 function App() {
   return (
@@ -48,11 +50,13 @@ function App() {
         <Route path="/vandermonde" element={<Vandermonde_Main />} />
         <Route path="/trazcub" element={<TrazCub_Main />} />
         <Route path="/Lagrange" element={<LagrangeInterpolation_Main/>} />
+        <Route path="/Simpson" element={<Simpson_Main />}></Route>
 
         {/* Métodos: Ecuaciones Diferenciales */}
         <Route path="/trapecio-compuesto" element={<TrapecioCompuesto_Main />} />
         <Route path="/Crout" element={<CroutMain/>}></Route>
         <Route path="/GSeidel" element={<GaussSeidelMain/>}></Route>
+        <Route path="/Euler" element={<Euler_Main />}></Route>
       </Routes>
     </Router>
   );

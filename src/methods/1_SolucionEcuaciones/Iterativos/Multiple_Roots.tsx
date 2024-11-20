@@ -4,79 +4,95 @@ import Plot from 'react-plotly.js';
 import Navbar from "../../../components/Navbar"; // Importación de Navbar
 
 const math = create(all);
+
 export function MultipleRoots_Main() {
     return (
-      <>
-        <Navbar />
-        <MultipleRoots />
-      </>
+        <>
+            <Navbar />
+            <MultipleRoots />
+        </>
     );
-  }
+}
+
 function MultipleRoots({ funct, firstDerivate, secondDerivate, tolerancestr, iterationsstr, x0str }) {
-    const tolerance = parseFloat(tolerancestr, 10);
-    const maxIterations = parseInt(iterationsstr, 10);
-    var X0 = parseFloat(x0str, 10);
+    const tolerance = parseFloat(tolerancestr || "0.0001");
+    const maxIterations = parseInt(iterationsstr || "100", 10);
+    const initialX0 = parseFloat(x0str || "1");
 
-    const f = (x) => math.evaluate(funct, { x: x });
-    const fPrime = (x) => math.evaluate(firstDerivate, { x: x });
-    const fDoublePrime = (x) => math.evaluate(secondDerivate, { x: x });
+    const f = (x) => math.evaluate(funct, { x });
+    const fPrime = (x) => math.evaluate(firstDerivate, { x });
+    const fDoublePrime = (x) => math.evaluate(secondDerivate, { x });
 
-    const [steps, setSteps] = useState<any[]>([]);  // Almacenar los pasos
+    const [steps, setSteps] = useState<any[]>([]); // Almacenar los pasos
     const [root, setRoot] = useState<number | null>(null);
     const [error, setError] = useState<number | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     useEffect(() => {
         const calculateMultipleRoots = () => {
-            if (Math.abs(f(X0)) < Number.EPSILON) {
-                setRoot(X0);
-                setError(0);
-                return;
-            }
+            try {
+                let X0 = initialX0;
+                let n = 0;
+                let localError = Infinity;
+                const stepsArray: any[] = [];
 
-            let n = 0;
-            let Xn = X0;
-            let localError = Infinity;
-            const stepsArray: any[] = [];
+                while (localError > tolerance && n < maxIterations) {
+                    const fx0 = f(X0);
+                    const fpx0 = fPrime(X0);
+                    const fppx0 = fDoublePrime(X0);
 
-            while (localError > tolerance && Math.abs(f(Xn)) > Number.EPSILON && n < maxIterations) {
-                const fx0 = f(X0);
-                const fpx0 = fPrime(X0);
-                const fppx0 = fDoublePrime(X0);
+                    if (Math.abs(Math.pow(fpx0, 2) - fx0 * fppx0) < Number.EPSILON) {
+                        setErrorMessage("División por cero en la fórmula. Revisa las derivadas y la función.");
+                        return;
+                    }
 
-                if (Math.abs(Math.pow(fpx0, 2) - fx0 * fppx0) < Number.EPSILON) {
-                    setSteps([{ step: n, Xn: X0, error: localError, message: "Error: Division by zero encountered." }]);
-                    return;
+                    const Xn = X0 - (fx0 * fpx0) / (Math.pow(fpx0, 2) - fx0 * fppx0);
+                    localError = Math.abs(Xn - X0);
+                    stepsArray.push({
+                        step: n + 1,
+                        Xn,
+                        fx0,
+                        fpx0,
+                        fppx0,
+                        error: localError,
+                    });
+
+                    X0 = Xn;
+                    n++;
                 }
 
-                Xn = X0 - (fx0 * fpx0) / (Math.pow(fpx0, 2) - fx0 * fppx0);
-                localError = Math.abs(Xn - X0);
-                stepsArray.push({ step: n, Xn: Xn, error: localError, fx0: fx0, fpx0: fpx0, fppx0: fppx0 });
+                setSteps(stepsArray);
 
-                X0 = Xn;
-                n++;
-            }
-
-            setSteps(stepsArray);
-            if (localError <= tolerance) {
-                setRoot(Xn);
-                setError(localError);
-            } else {
-                setRoot(Xn);
-                setError(localError);
+                if (localError <= tolerance) {
+                    setRoot(X0);
+                    setError(localError);
+                } else {
+                    setErrorMessage("No se encontró una raíz dentro del número máximo de iteraciones.");
+                }
+            } catch (err) {
+                setErrorMessage("Error al evaluar la función. Revisa las expresiones ingresadas.");
             }
         };
 
         calculateMultipleRoots();
-    }, [funct, firstDerivate, secondDerivate, tolerance, maxIterations, X0]);
+    }, [funct, firstDerivate, secondDerivate, tolerance, maxIterations, initialX0]);
 
     // Preparar datos para la gráfica
-    const plotData = steps.map(step => step.Xn);
-    const plotIterations = steps.map(step => step.step);
+    const plotData = steps.map((step) => step.Xn);
+    const plotIterations = steps.map((step) => step.step);
 
     return (
         <div>
-            <Navbar />  {/* Aquí agregamos el Navbar */}
+            <Navbar /> {/* Navbar */}
             <h2>Método de Múltiples Raíces (Newton-Raphson con segunda derivada)</h2>
+
+            {errorMessage && (
+                <div style={{ color: "red" }}>
+                    <h3>Error:</h3>
+                    <p>{errorMessage}</p>
+                </div>
+            )}
+
             {steps.length > 0 && (
                 <div>
                     <h3>Demostración paso a paso:</h3>
@@ -107,7 +123,7 @@ function MultipleRoots({ funct, firstDerivate, secondDerivate, tolerancestr, ite
                 </div>
             )}
 
-            {root && error !== null && (
+            {root !== null && error !== null && (
                 <div>
                     <h3>Resultado final:</h3>
                     <p>
