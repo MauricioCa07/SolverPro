@@ -11,7 +11,7 @@ import {
   Alert,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Navbar from "../../../components/Navbar";
+import Navbar from "../../components/Navbar";
 import { create, all } from "mathjs";
 import Plot from "react-plotly.js";
 import './TrazCub.css';  // Importación del archivo CSS
