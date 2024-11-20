@@ -17,7 +17,7 @@ function Card({ title, description, img, route }: Props) {
         <p className="card-text">{description}</p>
         <a className="btn btn-primary">
           <Link className="Link" to={route}>
-            Ir al metodo
+            Go to method
           </Link>
         </a>
       </div>

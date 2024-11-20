@@ -114,12 +114,12 @@ function EulerForm() {
       {result && (
         <div className="result-container">
           <h2>Solution</h2>
-          <table border="1" style={{ width: "100%", textAlign: "center" }}>
+          <table border="1" style={{ width: "100%", textAlign: "center", border:"1"}}>
             <thead>
               <tr>
                 <th>i</th>
-                <th>x</th>
-                <th>y</th>
+                <th>X</th>
+                <th>Y</th>
               </tr>
             </thead>
             <tbody>
@@ -132,6 +132,7 @@ function EulerForm() {
               ))}
             </tbody>
           </table>
+          <p>Being the last Y value of the table the approximation to solution</p>
         </div>
       )}
     </div>

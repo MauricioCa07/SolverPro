@@ -41,3 +41,9 @@
 .calculate-button.MuiButton-root:hover {
   background-color: #51e7bd !important;
 }
+
+td, th{
+  border: 1px solid black;
+  padding: 8px;
+  text-align: center;
+}

@@ -17,6 +17,7 @@ export function Tutorials() {
           </p>
 
           <h2>General Usage Instructions</h2>
+          <p id="warn">If you click on "Go to method" and it doesn't seem to work, try reloading the page and clicking until it redirects</p>
           <h3>Input Guidelines</h3>
           <ul>
             <li>
