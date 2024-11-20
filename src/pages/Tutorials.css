@@ -1,0 +1,75 @@
+/* Tutorials page container */
+.tutorial-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: "Arial", sans-serif;
+    color: #333;
+  }
+  
+  /* Title styling */
+  .tutorial-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2a9d8f;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Content sections */
+  .tutorial-content h2 {
+    font-size: 1.5rem;
+    margin-top: 20px;
+    color: #264653;
+  }
+  
+  .tutorial-content h3 {
+    font-size: 1.2rem;
+    margin-top: 15px;
+    color: #2a9d8f;
+  }
+  
+  /* Lists */
+  .tutorial-content ul {
+    margin-left: 20px;
+    list-style: disc;
+    color: #333;
+  }
+  
+  .tutorial-content ol {
+    margin-left: 20px;
+    list-style: decimal;
+    color: #333;
+  }
+  
+  /* Paragraphs */
+  .tutorial-content p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 10px 0;
+  }
+  
+  /* Code style */
+  .tutorial-content code {
+    background-color: #eee;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-family: "Courier New", Courier, monospace;
+    color: #d62828;
+  }
+  
+  /* Highlighted text */
+  .tutorial-content strong {
+    color: #e76f51;
+  }
+  
+  /* Add spacing to the bottom */
+  .tutorial-container h2,
+  .tutorial-container h3 {
+    margin-bottom: 10px;
+  }
+  
