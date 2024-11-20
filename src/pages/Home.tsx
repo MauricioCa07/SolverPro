@@ -82,7 +82,7 @@ export function Home() {
         />
         <Card
           title="Cholesky"
-          description="Decomposition of a symmetric, positive-definite matrix into \( L \cdot L^T \)."
+          description="Decomposition of a symmetric, positive-definite matrix."
           img="assets/Cholesky.jpg"
           route="/cholesky"
         />
@@ -102,11 +102,13 @@ export function Home() {
           title="SOR"
           description="Extension of the Gauss-Seidel method with a relaxation factor to accelerate convergence."
           img="assets/Sor.jpg"
+          route="/sor"
         />
         <Card
           title="Jacobi"
           description="Iterative method that updates solutions simultaneously at each iteration."
           img="assets/Jacobi.jpg"
+          route="/Jacobi"
         />
       </div>
 
@@ -122,6 +124,7 @@ export function Home() {
           title="Newton Divided Differences"
           description="Method to construct an interpolating polynomial using divided differences."
           img="assets/Dif_Divididas.jpg"
+          route="/newtondivideddifference"
         />
         <Card
           title="Simpson"

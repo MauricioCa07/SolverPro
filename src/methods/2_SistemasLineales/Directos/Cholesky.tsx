@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Navbar from "../../../components/Navbar";
+import "./Cholesky.css";
 
 export function Cholesky_Method() {
   return (
@@ -40,7 +41,7 @@ function Form() {
   }
 
   function handleSizeChange(e) {
-    const size = parseInt(e.target.value);
+    const size = parseFloat(e.target.value);
     if (size >= 2 && size <= 10) {
       setMatrixSize(size);
       initializeMatrixAndVector(size);

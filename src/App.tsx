@@ -17,13 +17,14 @@ import { GaussianPartialPivoting_Main } from "./methods/2_SistemasLineales/Direc
 import { GaussianTotalPivoting_Main } from "./methods/2_SistemasLineales/Directos/Gaussian_Total_Pivoting.tsx";
 import { MultipleRoots_Main } from "./methods/1_SolucionEcuaciones/Iterativos/Multiple_Roots.tsx";
 import { CroutMain } from "./methods/2_SistemasLineales/Directos/Crout.tsx";
-import { GaussSeidelMain } from "./methods/2_SistemasLineales/Iterativos/Gauss_Seidel.tsx";
+import { GaussSeidel_Main } from "./methods/2_SistemasLineales/Iterativos/Gauss_Seidel.tsx";
 import { LagrangeInterpolation_Main } from "./methods/3_Interpolacion/Lagrange.tsx";
 import { Euler_Main } from "./methods/4_EcuacionesDiferenciales/Euler.tsx";
 import { Simpson_Main } from "./methods/3_Interpolacion/Simpson.tsx";
 import { LU_Without_Piv } from "./methods/2_SistemasLineales/Directos/LU_Without_Piv.tsx";
 import { Cholesky_Method } from "./methods/2_SistemasLineales/Directos/Cholesky.tsx";
-import { Newton_Main } from "./methods/1_SolucionEcuaciones/Iterativos/Newton.tsx";
+import { Jacobi_Method } from "./methods/2_SistemasLineales/Iterativos/Jacobi_Method.tsx";
+import { Newton_Divided_Difference_Main } from "./methods/3_Interpolacion/Newton_Divided_Differences.tsx";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
         <Route path="/doolitle" element={<Doolittle_Main />} />
         <Route path="/luwithoutpiv" element={<LU_Without_Piv />} />
         <Route path="/cholesky" element={<Cholesky_Method />} />
+        <Route path="/Jacobi" element={<Jacobi_Method />} />
         <Route
           path="/gaussian-partial-pivoting"
           element={<GaussianPartialPivoting_Main />}
@@ -63,6 +65,10 @@ function App() {
         <Route path="/trazcub" element={<TrazCub_Main />} />
         <Route path="/Lagrange" element={<LagrangeInterpolation_Main />} />
         <Route path="/Simpson" element={<Simpson_Main />}></Route>
+        <Route
+          path="/newtondivideddifference"
+          element={<Newton_Divided_Difference_Main />}
+        ></Route>
 
         {/* Métodos: Ecuaciones Diferenciales */}
         <Route
@@ -70,7 +76,7 @@ function App() {
           element={<TrapecioCompuesto_Main />}
         />
         <Route path="/Crout" element={<CroutMain />}></Route>
-        <Route path="/GSeidel" element={<GaussSeidelMain />}></Route>
+        <Route path="/GSeidel" element={<GaussSeidel_Main />}></Route>
         <Route path="/Euler" element={<Euler_Main />}></Route>
       </Routes>
     </Router>

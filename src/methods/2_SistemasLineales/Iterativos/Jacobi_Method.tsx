@@ -12,11 +12,12 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Navbar from "../../../components/Navbar";
-import "./SOR.css";
+import "./Jacobi_Method.css";
 
+// Type for matrix cell values that can be either string or number
 type MatrixValue = string | number;
 
-export function SOR_Main() {
+export function Jacobi_Method() {
   return (
     <>
       <Navbar />
@@ -128,18 +129,21 @@ function Form() {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
+    // Convert and validate matrix A
     const convertedA = convertAndValidateMatrix(matrixA);
     if (!convertedA) {
       alert("Please enter valid numbers for matrix A");
       return;
     }
 
+    // Convert and validate vector B
     const convertedB = convertAndValidateVector(vectorB);
     if (!convertedB) {
       alert("Please enter valid numbers for vector B");
       return;
     }
 
+    // Convert and validate initial guess
     const convertedGuess = convertAndValidateVector(initialGuess);
     if (!convertedGuess) {
       alert("Please enter valid numbers for initial guess");
@@ -148,7 +152,6 @@ function Form() {
 
     const parsedTolerance = parseFloat(tolerance);
     const parsedMaxIterations = parseInt(maxIterations);
-    const parsedOmega = 1.0;
 
     if (isNaN(parsedTolerance) || parsedTolerance <= 0) {
       alert("Please enter a valid positive number for tolerance.");
@@ -160,15 +163,14 @@ function Form() {
     }
 
     try {
-      const result = sorMethod(
+      const result = jacobiMethod(
         convertedA,
         convertedB,
         convertedGuess,
         parsedTolerance,
-        parsedMaxIterations,
-        parsedOmega
+        parsedMaxIterations
       );
-      setResultComponent(<LinearResult result={result} />);
+      setResultComponent(<JacobiResult result={result} />);
     } catch (error: any) {
       setResultComponent(
         <Alert severity="error" style={{ marginTop: "20px" }}>
@@ -180,7 +182,7 @@ function Form() {
 
   return (
     <div className="container">
-      <h1 className="text-Method">SOR Method</h1>
+      <h1 className="text-Method">Jacobi Method</h1>
       <form onSubmit={handleSubmit}>
         <div style={{ marginTop: "50px", textAlign: "center" }}>
           <TextField
@@ -304,7 +306,7 @@ function Form() {
   );
 }
 
-function LinearResult({ result }: { result: any }) {
+function JacobiResult({ result }: { result: any }) {
   if (result.error) {
     return (
       <Alert severity="error" style={{ marginTop: "20px" }}>
@@ -350,13 +352,13 @@ function LinearResult({ result }: { result: any }) {
   );
 }
 
-function sorMethod(
+// Implementation of the Jacobi Method
+function jacobiMethod(
   A: number[][],
   b: number[],
   x0: number[],
   tol: number,
-  maxIter: number,
-  omega: number
+  maxIter: number
 ) {
   const n = A.length;
   let x = x0.slice();
@@ -369,19 +371,21 @@ function sorMethod(
       let sum = 0;
       for (let j = 0; j < n; j++) {
         if (j !== i) {
-          sum += A[i][j] * x[j];
+          sum += A[i][j] * xOld[j];
         }
       }
       if (A[i][i] === 0) {
         throw new Error(`Zero on diagonal at row ${i + 1}. Cannot proceed.`);
       }
-      x[i] = (1 - omega) * xOld[i] + (omega * (b[i] - sum)) / A[i][i];
+      x[i] = (b[i] - sum) / A[i][i];
     }
 
+    // Calculate the error (norm)
     const error = Math.sqrt(
       x.reduce((acc, xi, idx) => acc + Math.pow(xi - xOld[idx], 2), 0)
     );
 
+    // Record iteration
     iterations.push(
       `x(${k + 1}) = [${x
         .map((xi) => xi.toFixed(6))
