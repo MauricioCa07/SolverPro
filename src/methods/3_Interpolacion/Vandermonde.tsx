@@ -35,7 +35,7 @@ function VandermondeForm() {
       const graph = generateGraphData(X, coef);
       setGraphData(graph);
     } catch (error) {
-      alert("Error en el formato de los puntos. Use el formato: x1,y1 x2,y2 ...");
+      alert("Error in points format. Use the format: x1,y1 x2,y2 ...");
     }
   };
 
@@ -50,32 +50,32 @@ function VandermondeForm() {
 
   return (
     <div className="form-container">
-      <h2 className="title">Método de Vandermonde</h2>
+      <h2 className="title">Vandermonde method</h2>
       <form onSubmit={handleSubmit} className="form">
         <div>
-          <label className="label">Ingrese los puntos (formato: x1,y1 x2,y2 ...):</label>
+          <label className="label">Enter points (format: x1,y1 x2,y2 ...):</label>
           <input
             type="text"
             value={points}
             onChange={(e) => setPoints(e.target.value)}
-            placeholder="Ejemplo: 1,2 2,3 3,5"
+            placeholder="Example: 1,2 2,3 3,5"
             required
             className="input"
           />
         </div>
-        <button type="submit" className="submit-button">Calcular</button>
+        <button type="submit" className="submit-button">Solve</button>
       </form>
 
       {coefficients && (
         <div className="coefficients-section">
-          <h3>Coeficientes del Polinomio:</h3>
+          <h3>Polynomial coefficients:</h3>
           <pre>{JSON.stringify(coefficients, null, 2)}</pre>
         </div>
       )}
 
       {graphData && (
         <div className="graph-section">
-          <h3>Gráfica del Polinomio Interpolante:</h3>
+          <h3>Graph of the interpolating polynomial:</h3>
           <Plot
             data={[
               {
@@ -87,7 +87,7 @@ function VandermondeForm() {
               },
             ]}
             layout={{
-              title: "Polinomio Interpolante",
+              title: "Interpolating polynomial",
               xaxis: { title: "x" },
               yaxis: { title: "y" },
             }}
@@ -102,7 +102,7 @@ function VandermondeForm() {
 function parsePoints(input: string): [number, number][] {
   return input.split(" ").map((point) => {
     const [x, y] = point.split(",").map(Number);
-    if (isNaN(x) || isNaN(y)) throw new Error("Formato inválido");
+    if (isNaN(x) || isNaN(y)) throw new Error("Invalid format");
     return [x, y];
   });
 }
