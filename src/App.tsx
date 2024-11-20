@@ -25,6 +25,7 @@ import { LU_Without_Piv } from "./methods/2_SistemasLineales/Directos/LU_Without
 import { Cholesky_Method } from "./methods/2_SistemasLineales/Directos/Cholesky.tsx";
 import { Jacobi_Method } from "./methods/2_SistemasLineales/Iterativos/Jacobi_Method.tsx";
 import { Newton_Divided_Difference_Main } from "./methods/3_Interpolacion/Newton_Divided_Differences.tsx";
+import { Newton_Main } from "./methods/1_SolucionEcuaciones/Iterativos/Newton.tsx";
 
 function App() {
   return (
