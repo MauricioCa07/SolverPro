@@ -54,6 +54,9 @@
   cursor: pointer;
   position: relative;
   overflow: hidden;
+  text-decoration: none;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 
 .card .btn-primary:hover {
@@ -68,7 +71,5 @@
 
 .Link {
   text-decoration: none;
-  font-size: 1.3rem;
-  font-weight: 600;
   color: #ffffff;
 }

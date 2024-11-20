@@ -15,11 +15,9 @@ function Card({ title, description, img, route }: Props) {
       <div className="card-body">
         <h5 className="card-title">{title}</h5>
         <p className="card-text">{description}</p>
-        <a className="btn btn-primary">
-          <Link className="Link" to={route}>
-            Go to method
-          </Link>
-        </a>
+        <Link className="btn-primary Link" to={route}>
+          Go to method
+        </Link>
       </div>
     </div>
   );
