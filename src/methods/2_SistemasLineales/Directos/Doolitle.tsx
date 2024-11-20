@@ -15,7 +15,7 @@ import Navbar from "../../../components/Navbar";
 import Plot from "react-plotly.js";
 import "./Doolittle.css";
 
-export function Doolittle() {
+export function Doolittle_Main() {
   return (
     <>
       <Navbar />

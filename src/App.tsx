@@ -11,7 +11,7 @@ import { Gauss_Main } from "./methods/2_SistemasLineales/Directos/Gauss.tsx";
 import { SOR_Main } from "./methods/2_SistemasLineales/Iterativos/SOR.tsx";
 import { Doolittle_Main } from "./methods/2_SistemasLineales/Directos/Doolitle.tsx";
 import { Vandermonde_Main } from "./methods/3_Interpolacion/Vandermonde.tsx";
-import { TrazCub_Main } from "./methods/3_Interpolacion/Trazcub.tsx";
+import { TrazCub_Main } from "./methods/3_Interpolacion/TrazCub.tsx";
 import { TrapecioCompuesto_Main } from "./methods/4_EcuacionesDiferenciales/TrapecioCompuesto.tsx";
 import { GaussianPartialPivoting_Main } from "./methods/2_SistemasLineales/Directos/Gaussian_Partial_Pivoting.tsx";
 import { GaussianTotalPivoting_Main } from "./methods/2_SistemasLineales/Directos/Gaussian_Total_Pivoting.tsx";
