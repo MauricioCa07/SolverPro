@@ -5,7 +5,7 @@ import { Tutorials } from "./pages/Tutorials";
 import { Secant_Main } from "./methods/1_SolucionEcuaciones/Iterativos/Secant.tsx";
 import { Bisection_Main } from "./methods/1_SolucionEcuaciones/Directos/Bisection.tsx";
 import { FrMain } from "./methods/1_SolucionEcuaciones/Directos/False_Rule.tsx";
-import { SearchMain } from "./methods/1_SolucionEcuaciones/Iterativos/Search.tsx";
+import { Search_Main } from "./methods/1_SolucionEcuaciones/Iterativos/Search.tsx";
 import { LUpartialMain } from "./methods/2_SistemasLineales/Directos/LUpartial.tsx";
 import { Gauss_Main } from "./methods/2_SistemasLineales/Directos/Gauss.tsx";
 import { SOR_Main } from "./methods/2_SistemasLineales/Iterativos/SOR.tsx";
@@ -35,7 +35,7 @@ function App() {
         <Route path="/secant" element={<Secant_Main />} />
         <Route path="/biseccion" element={<Bisection_Main />} />
         <Route path="/Falserule" element={<FrMain />} />
-        <Route path="/Search" element={<SearchMain />} />
+        <Route path="/Search" element={<Search_Main />} />
         <Route path="/multiple-roots" element={<MultipleRoots_Main />} />
 
         {/* Métodos: Sistemas de Ecuaciones Lineales */}
