@@ -23,6 +23,7 @@ import { Euler_Main } from "./methods/4_EcuacionesDiferenciales/Euler.tsx";
 import { Simpson_Main } from "./methods/3_Interpolacion/Simpson.tsx";
 import { LU_Without_Piv } from "./methods/2_SistemasLineales/Directos/LU_Without_Piv.tsx";
 import { Cholesky_Method } from "./methods/2_SistemasLineales/Directos/Cholesky.tsx";
+import { Newton_Main } from "./methods/1_SolucionEcuaciones/Iterativos/Newton.tsx";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
         <Route path="/Falserule" element={<FrMain />} />
         <Route path="/Search" element={<Search_Main />} />
         <Route path="/multiple-roots" element={<MultipleRoots_Main />} />
+        <Route path="/Newton" element={<Newton_Main />}></Route>
 
         {/* Métodos: Sistemas de Ecuaciones Lineales */}
         <Route path="/LUpartial" element={<LUpartialMain />} />
