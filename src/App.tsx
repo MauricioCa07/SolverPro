@@ -21,6 +21,8 @@ import { GaussSeidelMain } from "./methods/2_SistemasLineales/Iterativos/Gauss_S
 import { LagrangeInterpolation_Main } from "./methods/3_Interpolacion/Lagrange.tsx";
 import { Euler_Main } from "./methods/4_EcuacionesDiferenciales/Euler.tsx";
 import { Simpson_Main } from "./methods/3_Interpolacion/Simpson.tsx";
+import { LU_Without_Piv } from "./methods/2_SistemasLineales/Directos/LU_Without_Piv.tsx";
+import { Cholesky_Method } from "./methods/2_SistemasLineales/Directos/Cholesky.tsx";
 
 function App() {
   return (
@@ -43,19 +45,30 @@ function App() {
         <Route path="/gauss" element={<Gauss_Main />} />
         <Route path="/sor" element={<SOR_Main />} />
         <Route path="/doolitle" element={<Doolittle_Main />} />
-        <Route path="/gaussian-partial-pivoting" element={<GaussianPartialPivoting_Main />} />
-        <Route path="/gaussian-total-pivoting" element={<GaussianTotalPivoting_Main />} />
+        <Route path="/luwithoutpiv" element={<LU_Without_Piv />} />
+        <Route path="/cholesky" element={<Cholesky_Method />} />
+        <Route
+          path="/gaussian-partial-pivoting"
+          element={<GaussianPartialPivoting_Main />}
+        />
+        <Route
+          path="/gaussian-total-pivoting"
+          element={<GaussianTotalPivoting_Main />}
+        />
 
         {/* Métodos: Interpolación */}
         <Route path="/vandermonde" element={<Vandermonde_Main />} />
         <Route path="/trazcub" element={<TrazCub_Main />} />
-        <Route path="/Lagrange" element={<LagrangeInterpolation_Main/>} />
+        <Route path="/Lagrange" element={<LagrangeInterpolation_Main />} />
         <Route path="/Simpson" element={<Simpson_Main />}></Route>
 
         {/* Métodos: Ecuaciones Diferenciales */}
-        <Route path="/trapecio-compuesto" element={<TrapecioCompuesto_Main />} />
-        <Route path="/Crout" element={<CroutMain/>}></Route>
-        <Route path="/GSeidel" element={<GaussSeidelMain/>}></Route>
+        <Route
+          path="/trapecio-compuesto"
+          element={<TrapecioCompuesto_Main />}
+        />
+        <Route path="/Crout" element={<CroutMain />}></Route>
+        <Route path="/GSeidel" element={<GaussSeidelMain />}></Route>
         <Route path="/Euler" element={<Euler_Main />}></Route>
       </Routes>
     </Router>
@@ -63,5 +76,3 @@ function App() {
 }
 
 export default App;
-
-

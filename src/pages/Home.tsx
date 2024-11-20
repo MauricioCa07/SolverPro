@@ -83,11 +83,13 @@ export function Home() {
           title="Cholesky"
           description="Decomposition of a symmetric, positive-definite matrix into \( L \cdot L^T \)."
           img="assets/Cholesky.jpg"
+          route="/cholesky"
         />
         <Card
           title="LU Without Pivoting"
-          description="Matrix factorization into \( L \) and \( U \) without pivoting."
+          description="Matrix factorization into  L and U without pivoting."
           img="assets/Lu_Sin_Pivoteo.jpg"
+          route="/luwithoutpiv"
         />
         <Card
           title="Gauss-Seidel"

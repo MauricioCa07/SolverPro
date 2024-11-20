@@ -13,7 +13,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Navbar from "../../../components/Navbar";
 
-export function Gauss_Main() {
+export function Cholesky_Method() {
   return (
     <>
       <Navbar />
@@ -79,13 +79,21 @@ function Form() {
       return;
     }
 
-    const result = gaussElimination(A, b);
-    setResultComponent(<GaussMethod result={result} />);
+    try {
+      const result = choleskyDecomposition(A, b);
+      setResultComponent(<CholeskyResult result={result} />);
+    } catch (error) {
+      setResultComponent(
+        <Alert severity="error" style={{ marginTop: "20px" }}>
+          {error.message}
+        </Alert>
+      );
+    }
   }
 
   return (
     <div className="container">
-      <h1 className="text-Method">Simple Gaussian Elimination</h1>
+      <h1 className="text-Method">Cholesky Decomposition Method</h1>
       <form onSubmit={handleSubmit}>
         <div style={{ marginTop: "50px", textAlign: "center" }}>
           <TextField
@@ -100,7 +108,7 @@ function Form() {
 
         {/* Matrix A Input */}
         <Typography variant="h6" gutterBottom style={{ marginTop: "20px" }}>
-          Enter Matrix A:
+          Enter Symmetric Positive Definite Matrix A:
         </Typography>
         <Box sx={{ overflowX: "auto" }}>
           <Grid
@@ -169,7 +177,7 @@ function Form() {
   );
 }
 
-function GaussMethod({ result }) {
+function CholeskyResult({ result }) {
   if (result.error) {
     return (
       <Alert severity="error" style={{ marginTop: "20px" }}>
@@ -215,71 +223,82 @@ function GaussMethod({ result }) {
   );
 }
 
-// Implementation of the Simple Gaussian Elimination Method
-function gaussElimination(A_input, b_input) {
+// Implementation of Cholesky Decomposition Method
+function choleskyDecomposition(A_input, b_input) {
   const n = A_input.length;
   const steps = [];
 
-  // Deep copy of A and b to avoid mutating the originals
-  let A = A_input.map((row) => row.slice());
-  let b = b_input.slice();
-
-  // Augmented Matrix [A|b]
-  let M = A.map((row, i) => [...row, b[i]]);
-
-  // Apply Gaussian Elimination
-  for (let k = 0; k < n - 1; k++) {
-    // Check if the diagonal element is zero
-    if (Math.abs(M[k][k]) < 1e-12) {
-      return {
-        error: `Zero element on diagonal at row ${k + 1}.`,
-        steps,
-      };
+  // Validate that the matrix is symmetric
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      if (A_input[i][j] !== A_input[j][i]) {
+        throw new Error("Matrix A must be symmetric.");
+      }
     }
+  }
 
-    steps.push({
-      title: `Elimination Step ${k + 1}`,
-      description: `Pivot: A[${k + 1}][${k + 1}] = ${M[k][k].toFixed(6)}\n`,
-    });
+  // Initialize L matrix
+  let L = Array.from({ length: n }, () => Array(n).fill(0));
 
-    for (let i = k + 1; i < n; i++) {
-      const factor = M[i][k] / M[k][k];
-      steps[steps.length - 1].description += `\nEliminating A[${i + 1}][${
-        k + 1
-      }], Multiplier = ${factor.toFixed(6)}\n`;
+  // Cholesky Decomposition
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j <= i; j++) {
+      let sum = 0;
 
-      for (let j = k; j < n + 1; j++) {
-        M[i][j] -= factor * M[k][j];
+      if (j === i) {
+        // Diagonal elements
+        for (let k = 0; k < j; k++) {
+          sum += Math.pow(L[j][k], 2);
+        }
+        const value = A_input[j][j] - sum;
+        if (value <= 0) {
+          throw new Error(
+            "Matrix is not positive definite. Cannot perform Cholesky Decomposition."
+          );
+        }
+        L[j][j] = Math.sqrt(value);
+      } else {
+        // Off-diagonal elements
+        for (let k = 0; k < j; k++) {
+          sum += L[i][k] * L[j][k];
+        }
+        L[i][j] = (A_input[i][j] - sum) / L[j][j];
       }
     }
 
-    // Record the state of the augmented matrix
-    steps[steps.length - 1].description += `\nAugmented Matrix after Step ${
-      k + 1
-    }:\n${augmentedMatrixToString(M)}\n`;
+    // Record the state of L matrix after each row calculation
+    steps.push({
+      title: `Decomposition Step ${i + 1}`,
+      description: `After step ${i + 1}, matrix L is:\n\nL =\n${matrixToString(
+        L
+      )}\n`,
+    });
   }
 
-  // Check if determinant is zero
-  let determinant = 1;
+  // Forward substitution Ly = b
+  let y = Array(n).fill(0);
   for (let i = 0; i < n; i++) {
-    determinant *= M[i][i];
-  }
-  if (Math.abs(determinant) < 1e-12) {
-    return {
-      error:
-        "The determinant of the matrix is zero. The system does not have a unique solution.",
-      steps,
-    };
+    let sum = 0;
+    for (let k = 0; k < i; k++) {
+      sum += L[i][k] * y[k];
+    }
+    y[i] = (b_input[i] - sum) / L[i][i];
+
+    // Record the forward substitution step
+    steps.push({
+      title: `Forward Substitution Step ${i + 1}`,
+      description: `Calculating y[${i + 1}] = ${y[i].toFixed(6)}\n`,
+    });
   }
 
-  // Back substitution
-  const x = Array(n).fill(0);
+  // Back substitution Lᵗx = y
+  let x = Array(n).fill(0);
   for (let i = n - 1; i >= 0; i--) {
     let sum = 0;
-    for (let j = i + 1; j < n; j++) {
-      sum += M[i][j] * x[j];
+    for (let k = i + 1; k < n; k++) {
+      sum += L[k][i] * x[k];
     }
-    x[i] = (M[i][n] - sum) / M[i][i];
+    x[i] = (y[i] - sum) / L[i][i];
 
     // Record the back substitution step
     steps.push({
@@ -291,15 +310,9 @@ function gaussElimination(A_input, b_input) {
   return { x, steps };
 }
 
-// Helper function to display the augmented matrix
-function augmentedMatrixToString(matrix) {
+// Helper function to display a matrix
+function matrixToString(matrix) {
   return matrix
-    .map((row) =>
-      row
-        .map((val, idx) =>
-          idx === row.length - 1 ? `| ${val.toFixed(6)}` : val.toFixed(6)
-        )
-        .join("\t")
-    )
+    .map((row) => row.map((val) => val.toFixed(6)).join("\t"))
     .join("\n");
 }
