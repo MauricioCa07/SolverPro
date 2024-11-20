@@ -50,13 +50,6 @@ export function Home() {
           img="assets/Busqueda.jpg"
           route="/Search"
         />
-        {/* Adding Doolittle Method Card */}
-        <Card
-          title="Doolittle"
-          description="LU Decomposition method that factors a matrix into lower and upper triangular matrices."
-          img="assets/Doolittle.jpg"
-          route="/doolittle"
-        />
       </div>
 
       <h1 className="text">Linear Systems</h1>
@@ -121,6 +114,13 @@ export function Home() {
           img="assets/Jacobi.jpg"
           route="/Jacobi"
         />
+        {/* Adding Doolittle Method Card */}
+        <Card
+          title="Doolittle"
+          description="LU Decomposition method that factors a matrix into lower and upper triangular matrices."
+          img="assets/Doolittle.jpg"
+          route="/doolittle"
+        />
       </div>
 
       <h1 className="text">Interpolation</h1>
@@ -143,6 +143,20 @@ export function Home() {
           img="assets/Simpson.jpg"
           route="/Simpson"
         />
+        {/* Adding TrazCub Method Card */}
+        <Card
+          title="TrazCub"
+          description="Cubic spline interpolation method for smooth function fitting."
+          img="assets/TrazCub.jpg"
+          route="/TrazCub"
+        />
+        {/* Adding Vandermonde Method Card */}
+        <Card
+          title="Vandermonde"
+          description="Method to solve linear systems using the Vandermonde matrix."
+          img="assets/Vandermonde.jpg"
+          route="/Vandermonde"
+        />
       </div>
 
       <h1 className="text">Differential Equations</h1>
@@ -153,27 +167,9 @@ export function Home() {
           img="assets/Euler.jpg"
           route="/Euler"
         />
-      </div>
-
-      <h1 className="text">Polynomial Systems</h1>
-      <div className="card-container">
-        {/* Adding Vandermonde Method Card */}
-        <Card
-          title="Vandermonde"
-          description="Method to solve linear systems using the Vandermonde matrix."
-          img="assets/Vandermonde.jpg"
-          route="/Vandermonde"
-        />
-        {/* Adding TrazCub Method Card */}
-        <Card
-          title="TrazCub"
-          description="Cubic spline interpolation method for smooth function fitting."
-          img="assets/TrazCub.jpg"
-          route="/TrazCub"
-        />
         {/* Adding TrapecioCompuesto Method Card */}
         <Card
-          title="Trapecio Compuesto"
+          title="Compound Trapezoid"
           description="Method for numerical integration using the trapezoidal rule on multiple intervals."
           img="assets/TrapecioCompuesto.jpg"
           route="/TrapecioCompuesto"

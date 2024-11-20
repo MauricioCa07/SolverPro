@@ -9,7 +9,7 @@ import { Search_Main } from "./methods/1_SolucionEcuaciones/Iterativos/Search.ts
 import { LUpartialMain } from "./methods/2_SistemasLineales/Directos/LUpartial.tsx";
 import { Gauss_Main } from "./methods/2_SistemasLineales/Directos/Gauss.tsx";
 import { SOR_Main } from "./methods/2_SistemasLineales/Iterativos/SOR.tsx";
-import { Doolittle_Main } from "./methods/2_SistemasLineales/Directos/Doolitle.tsx";
+import { Doolitle_Main } from "./methods/2_SistemasLineales/Directos/Doolitle.tsx";
 import { Vandermonde_Main } from "./methods/3_Interpolacion/Vandermonde.tsx";
 import { TrazCub_Main } from "./methods/3_Interpolacion/TrazCub.tsx";
 import { TrapecioCompuesto_Main } from "./methods/4_EcuacionesDiferenciales/TrapecioCompuesto.tsx";
@@ -48,7 +48,7 @@ function App() {
         <Route path="/LUpartial" element={<LUpartialMain />} />
         <Route path="/gauss" element={<Gauss_Main />} />
         <Route path="/sor" element={<SOR_Main />} />
-        <Route path="/doolitle" element={<Doolittle_Main />} />
+        <Route path="/doolitle" element={<Doolitle_Main />} />
         <Route path="/luwithoutpiv" element={<LU_Without_Piv />} />
         <Route path="/cholesky" element={<Cholesky_Method />} />
         <Route path="/Jacobi" element={<Jacobi_Method />} />
@@ -72,10 +72,7 @@ function App() {
         ></Route>
 
         {/* Métodos: Ecuaciones Diferenciales */}
-        <Route
-          path="/trapecio-compuesto"
-          element={<TrapecioCompuesto_Main />}
-        />
+        <Route path="/TrapecioCompuesto" element={<TrapecioCompuesto_Main />}/>
         <Route path="/Crout" element={<CroutMain />}></Route>
         <Route path="/GSeidel" element={<GaussSeidel_Main />}></Route>
         <Route path="/Euler" element={<Euler_Main />}></Route>
