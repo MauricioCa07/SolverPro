@@ -26,6 +26,7 @@ import { Cholesky_Method } from "./methods/2_SistemasLineales/Directos/Cholesky.
 import { Jacobi_Method } from "./methods/2_SistemasLineales/Iterativos/Jacobi_Method.tsx";
 import { Newton_Divided_Difference_Main } from "./methods/3_Interpolacion/Newton_Divided_Differences.tsx";
 import { Newton_Main } from "./methods/1_SolucionEcuaciones/Iterativos/Newton.tsx";
+import { FixedPoint_Main} from "./methods/1_SolucionEcuaciones/Iterativos/Fixed_Point.tsx"
 
 function App() {
   return (
@@ -43,6 +44,7 @@ function App() {
         <Route path="/Search" element={<Search_Main />} />
         <Route path="/multiple-roots" element={<MultipleRoots_Main />} />
         <Route path="/Newton" element={<Newton_Main />}></Route>
+        <Route path="/FixedPoint" element={<FixedPoint_Main/>}></Route>
 
         {/* Métodos: Sistemas de Ecuaciones Lineales */}
         <Route path="/LUpartial" element={<LUpartialMain />} />

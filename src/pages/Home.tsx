@@ -55,6 +55,12 @@ export function Home() {
       <h1 className="text">Linear Systems</h1>
       <div className="card-container">
         <Card
+          title="Doolittle"
+          description=""
+          img=""
+          route="/Doolittle"
+        />
+        <Card
           title="Crout"
           description="Decomposition of a matrix into \( L \) and \( U \) factors to solve linear systems."
           img="assets/Crout.jpg"
