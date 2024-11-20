@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Plot from "react-plotly.js";
-import Navbar from "../../../components/Navbar";
+import Navbar from "../../components/Navbar";
 
 export function TrapecioCompuesto_Main() {
   return (
