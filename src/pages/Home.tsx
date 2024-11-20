@@ -56,13 +56,13 @@ export function Home() {
       <div className="card-container">
         <Card
           title="Doolittle"
-          description=""
-          img=""
-          route="/Doolittle"
+          description="LU Decomposition method that factors a matrix into lower and upper triangular matrices."
+          img="assets/Dolittle.jpeg"
+          route="/doolitle"
         />
         <Card
           title="Crout"
-          description="Decomposition of a matrix into \( L \) and \( U \) factors to solve linear systems."
+          description="Decomposition of a matrix into  L  and  U  factors to solve linear systems."
           img="assets/Crout.jpg"
           route="/Crout"
         />
@@ -86,7 +86,7 @@ export function Home() {
         />
         <Card
           title="Partial LU"
-          description="Matrix factorization into \( L \) and \( U \) using partial pivoting."
+          description="Matrix factorization into  L and  U  using partial pivoting."
           img="assets/Lu_Pivoteo_Parcial.jpg"
           route="/LUpartial"
         />
@@ -120,13 +120,6 @@ export function Home() {
           img="assets/Jacobi.jpg"
           route="/Jacobi"
         />
-        {/* Adding Doolittle Method Card */}
-        <Card
-          title="Doolittle"
-          description="LU Decomposition method that factors a matrix into lower and upper triangular matrices."
-          img="assets/Doolittle.jpg"
-          route="/doolittle"
-        />
       </div>
 
       <h1 className="text">Interpolation</h1>
@@ -149,18 +142,17 @@ export function Home() {
           img="assets/Simpson.jpg"
           route="/Simpson"
         />
-        {/* Adding TrazCub Method Card */}
         <Card
           title="TrazCub"
           description="Cubic spline interpolation method for smooth function fitting."
-          img="assets/TrazCub.jpg"
+          img="assets/traz_Cub.jpeg"
           route="/TrazCub"
         />
         {/* Adding Vandermonde Method Card */}
         <Card
           title="Vandermonde"
           description="Method to solve linear systems using the Vandermonde matrix."
-          img="assets/Vandermonde.jpg"
+          img="assets/Vandermonde.jpeg"
           route="/Vandermonde"
         />
       </div>
@@ -173,11 +165,10 @@ export function Home() {
           img="assets/Euler.jpg"
           route="/Euler"
         />
-        {/* Adding TrapecioCompuesto Method Card */}
         <Card
           title="Compound Trapezoid"
           description="Method for numerical integration using the trapezoidal rule on multiple intervals."
-          img="assets/TrapecioCompuesto.jpg"
+          img="assets/Compound_Trapezoid.jpeg"
           route="/TrapecioCompuesto"
         />
       </div>

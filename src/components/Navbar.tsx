@@ -33,28 +33,29 @@ function Navbar() {
                 <div className="method-section">
                   <h3>Equation Solvers</h3>
                   <Link to="/biseccion">Bisection</Link>
-                  <Link to="/Falserule">False Rule</Link>
+                  <Link to="/Falserule">False Position</Link>
                   <Link to="/FixedPoint">Fixed Point</Link>
                   <Link to="/multiple-roots">Multiple Roots</Link>
                   <Link to="/Newton">Newton</Link>
-                  <Link to="/Secant">Secant</Link>
+                  <Link to="/secant">Secant</Link>
                   <Link to="/Search">Search</Link>
                 </div>
 
                 <div className="method-section">
                   <h3>Linear Systems</h3>
+                  <Link to="/doolitle">Doolittle</Link>
                   <Link to="/Crout">Crout</Link>
-                  <Link to="/gauss">Gauss</Link>
+                  <Link to="/gauss">Gauss Elimination</Link>
                   <Link to="/gaussian-partial-pivoting">
                     Gaussian Partial Pivoting
                   </Link>
                   <Link to="/gaussian-total-pivoting">
                     Gaussian Total Pivoting
                   </Link>
-                  <Link to="/LUpartial">LU Partial</Link>
+                  <Link to="/LUpartial">Partial LU</Link>
                   <Link to="/cholesky">Cholesky</Link>
                   <Link to="/luwithoutpiv">LU Without Pivoting</Link>
-                  <Link to="/GSeidel">Gauss Seidel</Link>
+                  <Link to="/GSeidel">Gauss-Seidel</Link>
                   <Link to="/sor">SOR</Link>
                   <Link to="/Jacobi">Jacobi</Link>
                 </div>
@@ -63,14 +64,17 @@ function Navbar() {
                   <h3>Interpolation</h3>
                   <Link to="/Lagrange">Lagrange</Link>
                   <Link to="/newtondivideddifference">
-                    Newton Divided Difference
+                    Newton Divided Differences
                   </Link>
                   <Link to="/Simpson">Simpson</Link>
+                  <Link to="/TrazCub">Cubic Spline (TrazCub)</Link>
+                  <Link to="/Vandermonde">Vandermonde</Link>
                 </div>
 
                 <div className="method-section">
                   <h3>Differential Equations</h3>
                   <Link to="/Euler">Euler</Link>
+                  <Link to="/TrapecioCompuesto">Compound Trapezoid</Link>
                 </div>
               </div>
             </li>

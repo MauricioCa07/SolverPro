@@ -11,7 +11,7 @@ import { Gauss_Main } from "./methods/2_SistemasLineales/Directos/Gauss.tsx";
 import { SOR_Main } from "./methods/2_SistemasLineales/Iterativos/SOR.tsx";
 import { Doolitle_Main } from "./methods/2_SistemasLineales/Directos/Doolitle.tsx";
 import { Vandermonde_Main } from "./methods/3_Interpolacion/Vandermonde.tsx";
-import { TrazCub_Main } from "./methods/3_Interpolacion/TrazCub.tsx";
+import { TrazCub_Main } from "./methods/3_Interpolacion/Trazcub.tsx";
 import { TrapecioCompuesto_Main } from "./methods/4_EcuacionesDiferenciales/TrapecioCompuesto.tsx";
 import { GaussianPartialPivoting_Main } from "./methods/2_SistemasLineales/Directos/Gaussian_Partial_Pivoting.tsx";
 import { GaussianTotalPivoting_Main } from "./methods/2_SistemasLineales/Directos/Gaussian_Total_Pivoting.tsx";
@@ -26,7 +26,7 @@ import { Cholesky_Method } from "./methods/2_SistemasLineales/Directos/Cholesky.
 import { Jacobi_Method } from "./methods/2_SistemasLineales/Iterativos/Jacobi_Method.tsx";
 import { Newton_Divided_Difference_Main } from "./methods/3_Interpolacion/Newton_Divided_Differences.tsx";
 import { Newton_Main } from "./methods/1_SolucionEcuaciones/Iterativos/Newton.tsx";
-import { FixedPoint_Main} from "./methods/1_SolucionEcuaciones/Iterativos/Fixed_Point.tsx"
+import { FixedPoint_Main } from "./methods/1_SolucionEcuaciones/Iterativos/Fixed_Point.tsx";
 
 function App() {
   return (
@@ -44,7 +44,7 @@ function App() {
         <Route path="/Search" element={<Search_Main />} />
         <Route path="/multiple-roots" element={<MultipleRoots_Main />} />
         <Route path="/Newton" element={<Newton_Main />}></Route>
-        <Route path="/FixedPoint" element={<FixedPoint_Main/>}></Route>
+        <Route path="/FixedPoint" element={<FixedPoint_Main />}></Route>
 
         {/* Métodos: Sistemas de Ecuaciones Lineales */}
         <Route path="/LUpartial" element={<LUpartialMain />} />
@@ -74,7 +74,7 @@ function App() {
         ></Route>
 
         {/* Métodos: Ecuaciones Diferenciales */}
-        <Route path="/TrapecioCompuesto" element={<TrapecioCompuesto_Main />}/>
+        <Route path="/TrapecioCompuesto" element={<TrapecioCompuesto_Main />} />
         <Route path="/Crout" element={<CroutMain />}></Route>
         <Route path="/GSeidel" element={<GaussSeidel_Main />}></Route>
         <Route path="/Euler" element={<Euler_Main />}></Route>
