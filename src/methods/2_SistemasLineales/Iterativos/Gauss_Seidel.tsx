@@ -13,7 +13,6 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Navbar from "../../../components/Navbar";
 
-// Type for matrix cell values that can be either string or number
 type MatrixValue = string | number;
 
 export function GaussSeidel_Main() {
@@ -344,7 +343,6 @@ function GaussSeidelResult({ result }: { result: any }) {
   );
 }
 
-// Implementation of the Gauss-Seidel Method
 function gaussSeidel(
   A: number[][],
   b: number[],
@@ -373,12 +371,10 @@ function gaussSeidel(
       x[i] = (b[i] - sum) / A[i][i];
     }
 
-    // Calculate the error (norm)
     error = Math.sqrt(
       x.reduce((acc, xi, idx) => acc + Math.pow(xi - xOld[idx], 2), 0)
     );
 
-    // Record iteration
     iterations.push(
       `x(${k + 1}) = [${x
         .map((xi) => xi.toFixed(6))

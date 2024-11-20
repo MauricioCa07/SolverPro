@@ -67,7 +67,6 @@ function Form() {
   function handleSubmit(e) {
     e.preventDefault();
 
-    // Convert inputs to numbers and validate
     const A = matrixA.map((row) => row.map((val) => parseFloat(val)));
     const b = vectorB.map((val) => parseFloat(val));
 
@@ -224,12 +223,10 @@ function CholeskyResult({ result }) {
   );
 }
 
-// Implementation of Cholesky Decomposition Method
 function choleskyDecomposition(A_input, b_input) {
   const n = A_input.length;
   const steps = [];
 
-  // Validate that the matrix is symmetric
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < n; j++) {
       if (A_input[i][j] !== A_input[j][i]) {
@@ -238,16 +235,13 @@ function choleskyDecomposition(A_input, b_input) {
     }
   }
 
-  // Initialize L matrix
   let L = Array.from({ length: n }, () => Array(n).fill(0));
 
-  // Cholesky Decomposition
   for (let i = 0; i < n; i++) {
     for (let j = 0; j <= i; j++) {
       let sum = 0;
 
       if (j === i) {
-        // Diagonal elements
         for (let k = 0; k < j; k++) {
           sum += Math.pow(L[j][k], 2);
         }
@@ -259,7 +253,6 @@ function choleskyDecomposition(A_input, b_input) {
         }
         L[j][j] = Math.sqrt(value);
       } else {
-        // Off-diagonal elements
         for (let k = 0; k < j; k++) {
           sum += L[i][k] * L[j][k];
         }
@@ -267,7 +260,6 @@ function choleskyDecomposition(A_input, b_input) {
       }
     }
 
-    // Record the state of L matrix after each row calculation
     steps.push({
       title: `Decomposition Step ${i + 1}`,
       description: `After step ${i + 1}, matrix L is:\n\nL =\n${matrixToString(
@@ -276,7 +268,6 @@ function choleskyDecomposition(A_input, b_input) {
     });
   }
 
-  // Forward substitution Ly = b
   let y = Array(n).fill(0);
   for (let i = 0; i < n; i++) {
     let sum = 0;
@@ -285,14 +276,12 @@ function choleskyDecomposition(A_input, b_input) {
     }
     y[i] = (b_input[i] - sum) / L[i][i];
 
-    // Record the forward substitution step
     steps.push({
       title: `Forward Substitution Step ${i + 1}`,
       description: `Calculating y[${i + 1}] = ${y[i].toFixed(6)}\n`,
     });
   }
 
-  // Back substitution Lᵗx = y
   let x = Array(n).fill(0);
   for (let i = n - 1; i >= 0; i--) {
     let sum = 0;
@@ -301,7 +290,6 @@ function choleskyDecomposition(A_input, b_input) {
     }
     x[i] = (y[i] - sum) / L[i][i];
 
-    // Record the back substitution step
     steps.push({
       title: `Back Substitution Step ${n - i}`,
       description: `Calculating x[${i + 1}] = ${x[i].toFixed(6)}\n`,
@@ -311,7 +299,6 @@ function choleskyDecomposition(A_input, b_input) {
   return { x, steps };
 }
 
-// Helper function to display a matrix
 function matrixToString(matrix) {
   return matrix
     .map((row) => row.map((val) => val.toFixed(6)).join("\t"))

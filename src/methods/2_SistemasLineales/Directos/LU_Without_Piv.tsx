@@ -67,7 +67,6 @@ function Form() {
   function handleSubmit(e) {
     e.preventDefault();
 
-    // Convert inputs to numbers and validate
     const A = matrixA.map((row) => row.map((val) => parseFloat(val)));
     const b = vectorB.map((val) => parseFloat(val));
 
@@ -224,22 +223,17 @@ function LUMethod({ result }) {
   );
 }
 
-// Implementation of LU Decomposition without Pivoting
 function luDecomposition(A_input, b_input) {
   const n = A_input.length;
   const steps = [];
 
-  // Initialize L and U matrices
   let L = Array.from({ length: n }, () => Array(n).fill(0));
   let U = Array.from({ length: n }, () => Array(n).fill(0));
 
-  // Deep copy of A and b to avoid mutating the originals
   let A = A_input.map((row) => row.slice());
   let b = b_input.slice();
 
-  // LU Decomposition without pivoting
   for (let i = 0; i < n; i++) {
-    // Upper Triangular Matrix U
     for (let k = i; k < n; k++) {
       let sum = 0;
       for (let j = 0; j < i; j++) {
@@ -248,10 +242,9 @@ function luDecomposition(A_input, b_input) {
       U[i][k] = A[i][k] - sum;
     }
 
-    // Lower Triangular Matrix L
     for (let k = i; k < n; k++) {
       if (i === k) {
-        L[i][i] = 1; // Diagonal as 1
+        L[i][i] = 1;
       } else {
         let sum = 0;
         for (let j = 0; j < i; j++) {
@@ -266,7 +259,6 @@ function luDecomposition(A_input, b_input) {
       }
     }
 
-    // Record the state of L and U matrices
     steps.push({
       title: `Decomposition Step ${i + 1}`,
       description: `After step ${
@@ -277,7 +269,6 @@ function luDecomposition(A_input, b_input) {
     });
   }
 
-  // Forward substitution Ly = b
   let y = Array(n).fill(0);
   for (let i = 0; i < n; i++) {
     let sum = 0;
@@ -286,14 +277,12 @@ function luDecomposition(A_input, b_input) {
     }
     y[i] = b[i] - sum;
 
-    // Record the forward substitution step
     steps.push({
       title: `Forward Substitution Step ${i + 1}`,
       description: `Calculating y[${i + 1}] = ${y[i].toFixed(6)}\n`,
     });
   }
 
-  // Back substitution Ux = y
   let x = Array(n).fill(0);
   for (let i = n - 1; i >= 0; i--) {
     let sum = 0;
@@ -307,7 +296,6 @@ function luDecomposition(A_input, b_input) {
     }
     x[i] = (y[i] - sum) / U[i][i];
 
-    // Record the back substitution step
     steps.push({
       title: `Back Substitution Step ${n - i}`,
       description: `Calculating x[${i + 1}] = ${x[i].toFixed(6)}\n`,
@@ -317,7 +305,6 @@ function luDecomposition(A_input, b_input) {
   return { x, steps };
 }
 
-// Helper function to display a matrix
 function matrixToString(matrix) {
   return matrix
     .map((row) => row.map((val) => val.toFixed(6)).join("\t"))

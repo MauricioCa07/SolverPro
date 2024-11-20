@@ -14,7 +14,7 @@ import {
   Paper,
 } from "@mui/material";
 import functionPlot from "function-plot";
-import "./Secant.css"; // Custom CSS for styling
+import "./Secant.css";
 
 const math = create(all);
 
@@ -114,7 +114,6 @@ function SecantMethod({
 
   useEffect(() => {
     try {
-      // Parse and validate inputs
       const tolerance = parseFloat(tolerancestr);
       const iterations = parseInt(iterationsstr);
       let X0 = parseFloat(x0str);
@@ -141,10 +140,8 @@ function SecantMethod({
         return;
       }
 
-      // Compile the function once
       const compiledFunction = math.compile(func);
 
-      // Define the function evaluation using the compiled function
       function f(x: number) {
         try {
           return compiledFunction.evaluate({ x });
@@ -258,7 +255,6 @@ function IterationTable({ iterations }) {
 function FunctionGraph({ func, iterations }) {
   useEffect(() => {
     try {
-      // Determine the domain based on iteration values
       let xValues = iterations.map((row) => row.Xn);
       let minX = Math.min(...xValues) - 1;
       let maxX = Math.max(...xValues) + 1;

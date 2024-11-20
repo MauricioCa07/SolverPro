@@ -14,7 +14,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Navbar from "../../../components/Navbar";
 import "./Jacobi_Method.css";
 
-// Type for matrix cell values that can be either string or number
 type MatrixValue = string | number;
 
 export function Jacobi_Method() {
@@ -129,21 +128,18 @@ function Form() {
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    // Convert and validate matrix A
     const convertedA = convertAndValidateMatrix(matrixA);
     if (!convertedA) {
       alert("Please enter valid numbers for matrix A");
       return;
     }
 
-    // Convert and validate vector B
     const convertedB = convertAndValidateVector(vectorB);
     if (!convertedB) {
       alert("Please enter valid numbers for vector B");
       return;
     }
 
-    // Convert and validate initial guess
     const convertedGuess = convertAndValidateVector(initialGuess);
     if (!convertedGuess) {
       alert("Please enter valid numbers for initial guess");
@@ -352,7 +348,6 @@ function JacobiResult({ result }: { result: any }) {
   );
 }
 
-// Implementation of the Jacobi Method
 function jacobiMethod(
   A: number[][],
   b: number[],
@@ -380,12 +375,10 @@ function jacobiMethod(
       x[i] = (b[i] - sum) / A[i][i];
     }
 
-    // Calculate the error (norm)
     const error = Math.sqrt(
       x.reduce((acc, xi, idx) => acc + Math.pow(xi - xOld[idx], 2), 0)
     );
 
-    // Record iteration
     iterations.push(
       `x(${k + 1}) = [${x
         .map((xi) => xi.toFixed(6))

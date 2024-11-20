@@ -66,7 +66,6 @@ function Form() {
   function handleSubmit(e) {
     e.preventDefault();
 
-    // Convert inputs to numbers and validate
     const A = matrixA.map((row) => row.map((val) => parseFloat(val)));
     const b = vectorB.map((val) => parseFloat(val));
 
@@ -215,21 +214,16 @@ function GaussMethod({ result }) {
   );
 }
 
-// Implementation of the Simple Gaussian Elimination Method
 function gaussElimination(A_input, b_input) {
   const n = A_input.length;
   const steps = [];
 
-  // Deep copy of A and b to avoid mutating the originals
   let A = A_input.map((row) => row.slice());
   let b = b_input.slice();
 
-  // Augmented Matrix [A|b]
   let M = A.map((row, i) => [...row, b[i]]);
 
-  // Apply Gaussian Elimination
   for (let k = 0; k < n - 1; k++) {
-    // Check if the diagonal element is zero
     if (Math.abs(M[k][k]) < 1e-12) {
       return {
         error: `Zero element on diagonal at row ${k + 1}.`,
@@ -253,13 +247,11 @@ function gaussElimination(A_input, b_input) {
       }
     }
 
-    // Record the state of the augmented matrix
     steps[steps.length - 1].description += `\nAugmented Matrix after Step ${
       k + 1
     }:\n${augmentedMatrixToString(M)}\n`;
   }
 
-  // Check if determinant is zero
   let determinant = 1;
   for (let i = 0; i < n; i++) {
     determinant *= M[i][i];
@@ -272,7 +264,6 @@ function gaussElimination(A_input, b_input) {
     };
   }
 
-  // Back substitution
   const x = Array(n).fill(0);
   for (let i = n - 1; i >= 0; i--) {
     let sum = 0;
@@ -281,7 +272,6 @@ function gaussElimination(A_input, b_input) {
     }
     x[i] = (M[i][n] - sum) / M[i][i];
 
-    // Record the back substitution step
     steps.push({
       title: `Back Substitution Step ${n - i}`,
       description: `Calculating x[${i + 1}] = ${x[i].toFixed(6)}\n`,
@@ -291,7 +281,6 @@ function gaussElimination(A_input, b_input) {
   return { x, steps };
 }
 
-// Helper function to display the augmented matrix
 function augmentedMatrixToString(matrix) {
   return matrix
     .map((row) =>

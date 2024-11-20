@@ -46,7 +46,7 @@ function Form() {
     const newInitialGuess = Array(size).fill("");
     setMatrixA(newMatrixA);
     setVectorB(newVectorB);
-    setInitialGuess(newInitialGuess);
+    setInitialGuess(newInitialGues);
   }
 
   function handleSizeChange(e: React.ChangeEvent<HTMLInputElement>) {
