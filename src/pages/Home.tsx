@@ -34,6 +34,7 @@ export function Home() {
           title="Newton"
           description="Iterative method that uses the function's derivative to quickly converge to the root."
           img="assets/Newton.jpg"
+          route="./Newton"
         />
         <Card
           title="Secant"
