@@ -1,172 +1,325 @@
-import React, { useState, useEffect } from 'react';
-import { create, all } from 'mathjs';
-import Plot from 'react-plotly.js';
-import Navbar from "../../../components/Navbar"; // Importar Navbar
+import React, { useState, useEffect } from "react";
+import {
+  Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  TextField,
+  Grid,
+  Box,
+  Button,
+  Alert,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Navbar from "../../../components/Navbar";
+import { create, all } from "mathjs";
+import Plot from "react-plotly.js";
 
 const math = create(all);
 
 export function GaussianTotalPivoting_Main() {
-    return (
-        <>
-            <Navbar />
-            <GaussianTotalPivoting />
-        </>
-    );
+  return (
+    <>
+      <Navbar />
+      <Form />
+    </>
+  );
 }
 
-function GaussianTotalPivoting({ matrixA, vectorB, n }: { matrixA: string; vectorB: string; n: string }) {
-    const nVar = parseInt(n, 10);
-    const [solution, setSolution] = useState<number[]>([]);
-    const [steps, setSteps] = useState<any[]>([]);
-    const [error, setError] = useState<string | null>(null);
+function Form() {
+  const [matrixSize, setMatrixSize] = useState(3);
+  const [matrixA, setMatrixA] = useState([]);
+  const [vectorB, setVectorB] = useState([]);
+  const [resultComponent, setResultComponent] = useState(null);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        try {
-            let A = math.matrix(matrixA.split(';').map(row => row.split(',').map(Number)));
-            let b = math.matrix(vectorB.split(',').map(Number));
+  useEffect(() => {
+    initializeMatrixAndVector(matrixSize);
+  }, [matrixSize]);
 
-            // Ensure b is a column vector
-            b = math.reshape(b, [nVar, 1]);
+  function initializeMatrixAndVector(size) {
+    const newMatrixA = Array.from({ length: size }, () => Array(size).fill(""));
+    const newVectorB = Array(size).fill("");
+    setMatrixA(newMatrixA);
+    setVectorB(newVectorB);
+  }
 
-            // Check dimensions
-            if (A.size()[0] !== nVar || A.size()[1] !== nVar || b.size()[0] !== nVar) {
-                throw new Error("Matrix dimensions do not match the specified size n.");
-            }
+  function handleSizeChange(e) {
+    const size = parseInt(e.target.value);
+    if (size >= 2 && size <= 10) {
+      setMatrixSize(size);
+      initializeMatrixAndVector(size);
+    } else {
+      alert("Please enter a size between 2 and 10.");
+    }
+  }
 
-            // Check determinant
-            if (Math.abs(math.det(A)) < 1e-10) {
-                throw new Error("Matrix is singular or nearly singular. Cannot proceed.");
-            }
+  function handleMatrixInputChange(e, row, col) {
+    const value = e.target.value;
+    const updatedMatrix = [...matrixA];
+    updatedMatrix[row][col] = value;
+    setMatrixA(updatedMatrix);
+  }
 
-            // Combine A and b into an augmented matrix
-            let augmentedMatrix = math.concat(A, b);
-            let columnSwaps = Array.from({ length: nVar }, (_, i) => i); // Track column swaps
+  function handleVectorInputChange(e, index) {
+    const value = e.target.value;
+    const updatedVector = [...vectorB];
+    updatedVector[index] = value;
+    setVectorB(updatedVector);
+  }
 
-            // Steps for visualization
-            const stepsArray: any[] = [];
+  function handleSubmit(e) {
+    e.preventDefault();
+    const A = matrixA.map((row) => row.map((val) => parseFloat(val)));
+    const b = vectorB.map((val) => parseFloat(val));
 
-            // Gaussian elimination with total pivoting
-            for (let k = 0; k < nVar - 1; k++) {
-                // Find pivot
-                let maxVal = 0, maxRow = k, maxCol = k;
-                for (let i = k; i < nVar; i++) {
-                    for (let j = k; j < nVar; j++) {
-                        let absVal = Math.abs(augmentedMatrix.get([i, j]));
-                        if (absVal > maxVal) {
-                            maxVal = absVal;
-                            maxRow = i;
-                            maxCol = j;
-                        }
-                    }
-                }
+    if (A.some((row) => row.some((val) => isNaN(val)))) {
+      alert("Please enter valid numbers for matrix A.");
+      return;
+    }
+    if (b.some((val) => isNaN(val))) {
+      alert("Please enter valid numbers for vector b.");
+      return;
+    }
 
-                // Check for singular matrix
-                if (maxVal < 1e-10) {
-                    throw new Error("Matrix is numerically singular. Cannot proceed.");
-                }
+    const result = gaussianTotalPivoting(A, b);
+    if (result.error) {
+      setError(result.error);
+      setResultComponent(null);
+    } else {
+      setError(null);
+      setResultComponent(<GaussMethod result={result} />);
+    }
+  }
 
-                // Swap rows
-                if (maxRow !== k) {
-                    for (let j = k; j <= nVar; j++) {
-                        let temp = augmentedMatrix.get([k, j]);
-                        augmentedMatrix.set([k, j], augmentedMatrix.get([maxRow, j]));
-                        augmentedMatrix.set([maxRow, j], temp);
-                    }
-                }
-
-                // Swap columns
-                if (maxCol !== k) {
-                    for (let i = 0; i < nVar; i++) {
-                        let temp = augmentedMatrix.get([i, k]);
-                        augmentedMatrix.set([i, k], augmentedMatrix.get([i, maxCol]));
-                        augmentedMatrix.set([i, maxCol], temp);
-                    }
-                    [columnSwaps[k], columnSwaps[maxCol]] = [columnSwaps[maxCol], columnSwaps[k]];
-                }
-
-                // Eliminate
-                for (let i = k + 1; i < nVar; i++) {
-                    let factor = augmentedMatrix.get([i, k]) / augmentedMatrix.get([k, k]);
-                    for (let j = k; j <= nVar; j++) {
-                        let value = augmentedMatrix.get([i, j]) - factor * augmentedMatrix.get([k, j]);
-                        augmentedMatrix.set([i, j], value);
-                    }
-                }
-
-                // Store step
-                stepsArray.push({
-                    step: k + 1,
-                    matrix: math.clone(augmentedMatrix)._data,
-                    columnSwaps: [...columnSwaps],
-                });
-            }
-
-            // Back substitution
-            let x = Array(nVar).fill(0);
-            for (let i = nVar - 1; i >= 0; i--) {
-                let sum = 0;
-                for (let j = i + 1; j < nVar; j++) {
-                    sum += augmentedMatrix.get([i, j]) * x[columnSwaps[j]];
-                }
-                x[columnSwaps[i]] = (augmentedMatrix.get([i, nVar]) - sum) / augmentedMatrix.get([i, i]);
-                x[columnSwaps[i]] = Math.round(x[columnSwaps[i]] * 1e10) / 1e10; // Avoid floating-point issues
-            }
-
-            setSolution(x);
-            setSteps(stepsArray);
-        } catch (err: any) {
-            setError(err.message);
-        }
-    }, [matrixA, vectorB, nVar]);
-
-    const plotData = solution.map((value, index) => ({ x: `x${index + 1}`, value }));
-
-    return (
-        <div>
-            <Navbar />
-            <h2>Método de Eliminación Gaussiana con Pivoteo Total</h2>
-
-            {error && <h3>Error: {error}</h3>}
-
-            {steps.length > 0 && (
-                <>
-                    <h3>Demostración paso a paso:</h3>
-                    {steps.map((step, index) => (
-                        <div key={index}>
-                            <h4>Paso {step.step}:</h4>
-                            <p>Intercambio de columnas: {JSON.stringify(step.columnSwaps)}</p>
-                            <pre>{JSON.stringify(step.matrix, null, 2)}</pre>
-                        </div>
-                    ))}
-                </>
-            )}
-
-            {solution.length > 0 && (
-                <>
-                    <h3>Resultado final:</h3>
-                    {solution.map((value, index) => (
-                        <p key={index}>x{index + 1} = {value}</p>
-                    ))}
-
-                    <h3>Gráfica de las variables:</h3>
-                    <Plot
-                        data={[
-                            {
-                                x: plotData.map(d => d.x),
-                                y: plotData.map(d => d.value),
-                                type: 'bar',
-                                name: 'Valores de las variables',
-                                marker: { color: 'blue' },
-                            },
-                        ]}
-                        layout={{
-                            title: 'Valores de las variables resultantes',
-                            xaxis: { title: 'Variables' },
-                            yaxis: { title: 'Valor' },
-                        }}
-                    />
-                </>
-            )}
+  return (
+    <div className="container">
+      <h1 className="text-Method">Gaussian Elimination with Total Pivoting</h1>
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginTop: "50px", textAlign: "center" }}>
+          <TextField
+            label="Matrix size (n)"
+            type="number"
+            value={matrixSize}
+            onChange={handleSizeChange}
+            InputProps={{ inputProps: { min: 2, max: 10 } }}
+            style={{ width: "300px" }}
+          />
         </div>
-    );
+
+        <Typography variant="h6" gutterBottom style={{ marginTop: "20px" }}>
+          Enter Matrix A:
+        </Typography>
+        <Box sx={{ overflowX: "auto" }}>
+          <Grid
+            container
+            spacing={1}
+            direction="column"
+            justifyContent="center"
+          >
+            {matrixA.map((row, rowIndex) => (
+              <Grid item key={rowIndex}>
+                <Grid container spacing={1} direction="row">
+                  {row.map((value, colIndex) => (
+                    <Grid item key={colIndex}>
+                      <TextField
+                        variant="outlined"
+                        value={value}
+                        onChange={(e) =>
+                          handleMatrixInputChange(e, rowIndex, colIndex)
+                        }
+                        style={{ width: "80px" }}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+
+        <Typography variant="h6" gutterBottom style={{ marginTop: "20px" }}>
+          Enter Vector b:
+        </Typography>
+        <Box sx={{ overflowX: "auto" }}>
+          <Grid container spacing={1} direction="column" alignItems="center">
+            {vectorB.map((value, index) => (
+              <Grid item key={index}>
+                <TextField
+                  variant="outlined"
+                  value={value}
+                  onChange={(e) => handleVectorInputChange(e, index)}
+                  style={{ width: "80px" }}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+
+        <div style={{ textAlign: "center", marginTop: "30px" }}>
+          <Button
+            type="submit"
+            variant="contained"
+            disableElevation
+            style={{ backgroundColor: "#2a9d8f", color: "#fff" }}
+          >
+            Calculate
+          </Button>
+        </div>
+      </form>
+      {error && (
+        <Alert severity="error" style={{ marginTop: "20px" }}>
+          {error}
+        </Alert>
+      )}
+      {resultComponent && (
+        <div className="result-container" style={{ marginTop: "40px" }}>
+          {resultComponent}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function GaussMethod({ result }) {
+  return (
+    <div>
+      <Typography variant="h4" gutterBottom>
+        Solution Vector x:
+      </Typography>
+      <ul>
+        {result.x.map((value, index) => (
+          <li key={index}>
+            <Typography variant="body1">
+              x<sub>{index + 1}</sub> = {value.toFixed(6)}
+            </Typography>
+          </li>
+        ))}
+      </ul>
+
+      <Typography variant="h4" gutterBottom style={{ marginTop: "30px" }}>
+        Steps:
+      </Typography>
+      {result.steps.map((step, index) => (
+        <Accordion key={index} style={{ backgroundColor: "#f1f1f1" }}>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls={`panel${index}-content`}
+            id={`panel${index}-header`}
+          >
+            <Typography variant="h6">{step.title}</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <pre style={{ whiteSpace: "pre-wrap" }}>{step.description}</pre>
+          </AccordionDetails>
+        </Accordion>
+      ))}
+
+      <Typography variant="h4" gutterBottom style={{ marginTop: "30px" }}>
+        Variable Plot:
+      </Typography>
+      <Plot
+        data={[
+          {
+            x: result.x.map((_, index) => `x${index + 1}`),
+            y: result.x,
+            type: "bar",
+            name: "Variable Values",
+            marker: { color: "blue" },
+          },
+        ]}
+        layout={{
+          title: "Resulting Variable Values",
+          xaxis: { title: "Variables" },
+          yaxis: { title: "Value" },
+        }}
+      />
+    </div>
+  );
+}
+
+function gaussianTotalPivoting(A, b) {
+  const n = A.length;
+  const steps = [];
+  let augmentedMatrix = A.map((row, i) => [...row, b[i]]);
+  let columnSwaps = Array.from({ length: n }, (_, i) => i);
+
+  for (let k = 0; k < n - 1; k++) {
+    let maxVal = 0;
+    let maxRow = k;
+    let maxCol = k;
+    for (let i = k; i < n; i++) {
+      for (let j = k; j < n; j++) {
+        if (Math.abs(augmentedMatrix[i][j]) > maxVal) {
+          maxVal = Math.abs(augmentedMatrix[i][j]);
+          maxRow = i;
+          maxCol = j;
+        }
+      }
+    }
+
+    if (maxVal < 1e-12) {
+      return {
+        error: `Matrix is numerically singular. Cannot proceed.`,
+        steps,
+      };
+    }
+
+    if (maxRow !== k) {
+      [augmentedMatrix[k], augmentedMatrix[maxRow]] = [
+        augmentedMatrix[maxRow],
+        augmentedMatrix[k],
+      ];
+    }
+
+    if (maxCol !== k) {
+      for (let i = 0; i < n; i++) {
+        [augmentedMatrix[i][k], augmentedMatrix[i][maxCol]] = [
+          augmentedMatrix[i][maxCol],
+          augmentedMatrix[i][k],
+        ];
+      }
+      [columnSwaps[k], columnSwaps[maxCol]] = [
+        columnSwaps[maxCol],
+        columnSwaps[k],
+      ];
+    }
+
+    for (let i = k + 1; i < n; i++) {
+      const factor = augmentedMatrix[i][k] / augmentedMatrix[k][k];
+      for (let j = k; j <= n; j++) {
+        augmentedMatrix[i][j] -= factor * augmentedMatrix[k][j];
+      }
+    }
+
+    steps.push({
+      title: `Elimination Step ${k + 1}`,
+      description: `Augmented Matrix after Step ${k + 1}:
+${augmentedMatrixToString(augmentedMatrix)}
+Column Swaps: ${columnSwaps}`,
+    });
+  }
+
+  const x = Array(n).fill(0);
+  for (let i = n - 1; i >= 0; i--) {
+    let sum = 0;
+    for (let j = i + 1; j < n; j++) {
+      sum += augmentedMatrix[i][j] * x[columnSwaps[j]];
+    }
+    x[columnSwaps[i]] = (augmentedMatrix[i][n] - sum) / augmentedMatrix[i][i];
+  }
+
+  return { x, steps };
+}
+
+function augmentedMatrixToString(matrix) {
+  return matrix
+    .map((row) =>
+      row
+        .map((val, idx) =>
+          idx === row.length - 1 ? `| ${val.toFixed(6)}` : val.toFixed(6)
+        )
+        .join("\t")
+    )
+    .join("\n");
 }
