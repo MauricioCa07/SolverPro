@@ -12,10 +12,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Navbar from "../../../components/Navbar";
-import { create, all } from "mathjs";
-import Plot from "react-plotly.js";
-
-const math = create(all);
+import "./GaussianPartialPivoting.css";
 
 export function GaussianPartialPivoting_Main() {
   return (
@@ -31,7 +28,6 @@ function Form() {
   const [matrixA, setMatrixA] = useState([]);
   const [vectorB, setVectorB] = useState([]);
   const [resultComponent, setResultComponent] = useState(null);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     initializeMatrixAndVector(matrixSize);
@@ -70,6 +66,7 @@ function Form() {
 
   function handleSubmit(e) {
     e.preventDefault();
+
     const A = matrixA.map((row) => row.map((val) => parseFloat(val)));
     const b = vectorB.map((val) => parseFloat(val));
 
@@ -82,21 +79,21 @@ function Form() {
       return;
     }
 
-    const result = gaussianPartialPivoting(A, b);
-    if (result.error) {
-      setError(result.error);
-      setResultComponent(null);
-    } else {
-      setError(null);
-      setResultComponent(<GaussMethod result={result} />);
+    try {
+      const result = gaussianPartialPivoting(A, b);
+      setResultComponent(<GaussianMethod result={result} />);
+    } catch (error) {
+      setResultComponent(
+        <Alert severity="error" style={{ marginTop: "20px" }}>
+          {error.message}
+        </Alert>
+      );
     }
   }
 
   return (
     <div className="container">
-      <h1 className="text-Method">
-        Gaussian Elimination with Partial Pivoting
-      </h1>
+      <h1 className="text-Method">Gaussian Elimination with Partial Pivoting</h1>
       <form onSubmit={handleSubmit}>
         <div style={{ marginTop: "50px", textAlign: "center" }}>
           <TextField
@@ -109,16 +106,12 @@ function Form() {
           />
         </div>
 
+        {/* Matrix A Input */}
         <Typography variant="h6" gutterBottom style={{ marginTop: "20px" }}>
           Enter Matrix A:
         </Typography>
         <Box sx={{ overflowX: "auto" }}>
-          <Grid
-            container
-            spacing={1}
-            direction="column"
-            justifyContent="center"
-          >
+          <Grid container spacing={1} direction="column" justifyContent="center">
             {matrixA.map((row, rowIndex) => (
               <Grid item key={rowIndex}>
                 <Grid container spacing={1} direction="row">
@@ -127,9 +120,7 @@ function Form() {
                       <TextField
                         variant="outlined"
                         value={value}
-                        onChange={(e) =>
-                          handleMatrixInputChange(e, rowIndex, colIndex)
-                        }
+                        onChange={(e) => handleMatrixInputChange(e, rowIndex, colIndex)}
                         style={{ width: "80px" }}
                       />
                     </Grid>
@@ -140,6 +131,7 @@ function Form() {
           </Grid>
         </Box>
 
+        {/* Vector b Input */}
         <Typography variant="h6" gutterBottom style={{ marginTop: "20px" }}>
           Enter Vector b:
         </Typography>
@@ -169,11 +161,6 @@ function Form() {
           </Button>
         </div>
       </form>
-      {error && (
-        <Alert severity="error" style={{ marginTop: "20px" }}>
-          {error}
-        </Alert>
-      )}
       {resultComponent && (
         <div className="result-container" style={{ marginTop: "40px" }}>
           {resultComponent}
@@ -183,7 +170,15 @@ function Form() {
   );
 }
 
-function GaussMethod({ result }) {
+function GaussianMethod({ result }) {
+  if (result.error) {
+    return (
+      <Alert severity="error" style={{ marginTop: "20px" }}>
+        {result.error}
+      </Alert>
+    );
+  }
+
   return (
     <div>
       <Typography variant="h4" gutterBottom>
@@ -202,6 +197,7 @@ function GaussMethod({ result }) {
       <Typography variant="h4" gutterBottom style={{ marginTop: "30px" }}>
         Steps:
       </Typography>
+
       {result.steps.map((step, index) => (
         <Accordion key={index} style={{ backgroundColor: "#f1f1f1" }}>
           <AccordionSummary
@@ -216,26 +212,6 @@ function GaussMethod({ result }) {
           </AccordionDetails>
         </Accordion>
       ))}
-
-      <Typography variant="h4" gutterBottom style={{ marginTop: "30px" }}>
-        Variable Plot:
-      </Typography>
-      <Plot
-        data={[
-          {
-            x: result.x.map((_, index) => `x${index + 1}`),
-            y: result.x,
-            type: "bar",
-            name: "Variable Values",
-            marker: { color: "blue" },
-          },
-        ]}
-        layout={{
-          title: "Resulting Variable Values",
-          xaxis: { title: "Variables" },
-          yaxis: { title: "Value" },
-        }}
-      />
     </div>
   );
 }
@@ -243,63 +219,53 @@ function GaussMethod({ result }) {
 function gaussianPartialPivoting(A, b) {
   const n = A.length;
   const steps = [];
-  let augmentedMatrix = A.map((row, i) => [...row, b[i]]);
 
   for (let k = 0; k < n - 1; k++) {
-    let maxIndex = k;
+    let maxRow = k;
     for (let i = k + 1; i < n; i++) {
-      if (
-        Math.abs(augmentedMatrix[i][k]) > Math.abs(augmentedMatrix[maxIndex][k])
-      ) {
-        maxIndex = i;
+      if (Math.abs(A[i][k]) > Math.abs(A[maxRow][k])) {
+        maxRow = i;
       }
     }
 
-    if (maxIndex !== k) {
-      [augmentedMatrix[k], augmentedMatrix[maxIndex]] = [
-        augmentedMatrix[maxIndex],
-        augmentedMatrix[k],
-      ];
+    if (A[maxRow][k] === 0) {
+      throw new Error("Matrix is singular.");
     }
 
-    if (Math.abs(augmentedMatrix[k][k]) < 1e-12) {
-      return { error: `Zero element on diagonal at row ${k + 1}.`, steps };
-    }
+    [A[k], A[maxRow]] = [A[maxRow], A[k]];
+    [b[k], b[maxRow]] = [b[maxRow], b[k]];
 
     for (let i = k + 1; i < n; i++) {
-      const factor = augmentedMatrix[i][k] / augmentedMatrix[k][k];
-      for (let j = k; j <= n; j++) {
-        augmentedMatrix[i][j] -= factor * augmentedMatrix[k][j];
+      const factor = A[i][k] / A[k][k];
+      for (let j = k; j < n; j++) {
+        A[i][j] -= factor * A[k][j];
       }
+      b[i] -= factor * b[k];
     }
 
     steps.push({
-      title: `Elimination Step ${k + 1}`,
-      description: `Augmented Matrix after Step ${k + 1}:
-${augmentedMatrixToString(augmentedMatrix)}`,
+      title: `Step ${k + 1}`,
+      description: `Pivot row ${k + 1} with row ${maxRow + 1}\nMatrix:\n${matrixToString(
+        A
+      )}\nVector b:\n${b.join(", ")}`,
     });
   }
 
   const x = Array(n).fill(0);
   for (let i = n - 1; i >= 0; i--) {
-    let sum = 0;
+    x[i] = b[i];
     for (let j = i + 1; j < n; j++) {
-      sum += augmentedMatrix[i][j] * x[j];
+      x[i] -= A[i][j] * x[j];
     }
-    x[i] = (augmentedMatrix[i][n] - sum) / augmentedMatrix[i][i];
+    x[i] /= A[i][i];
   }
 
   return { x, steps };
 }
 
-function augmentedMatrixToString(matrix) {
+function matrixToString(matrix) {
   return matrix
-    .map((row) =>
-      row
-        .map((val, idx) =>
-          idx === row.length - 1 ? `| ${val.toFixed(6)}` : val.toFixed(6)
-        )
-        .join("\t")
-    )
+    .map((row) => row.map((val) => val.toFixed(6)).join("\t"))
     .join("\n");
 }
+

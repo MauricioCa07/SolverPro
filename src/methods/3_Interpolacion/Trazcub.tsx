@@ -1,162 +1,302 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  Typography,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  TextField,
+  Grid,
+  Box,
+  Button,
+  Alert,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Navbar from "../../../components/Navbar";
+import { create, all } from "mathjs";
 import Plot from "react-plotly.js";
-import Navbar from "../../components/Navbar";
+import './TrazCub.css';  // Importación del archivo CSS
+
+const math = create(all);
 
 export function TrazCub_Main() {
   return (
     <>
       <Navbar />
-      <TrazCubForm />
+      <Form />
     </>
   );
 }
 
-function TrazCubForm() {
-  const [xValues, setXValues] = useState<string>("0 1 2 3"); // Puntos x
-  const [yValues, setYValues] = useState<string>("1 2 0 3"); // Puntos y
-  const [result, setResult] = useState<any>(null); // Resultados de la interpolación
+function Form() {
+  const [matrixSize, setMatrixSize] = useState(3);
+  const [matrixA, setMatrixA] = useState([]);
+  const [vectorB, setVectorB] = useState([]);
+  const [resultComponent, setResultComponent] = useState(null);
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const x = parseValues(xValues);
-      const y = parseValues(yValues);
-      
-      if (x.length !== y.length) {
-        alert("Los puntos x y y deben tener la misma cantidad de elementos.");
-        return;
-      }
+  useEffect(() => {
+    initializeMatrixAndVector(matrixSize);
+  }, [matrixSize]);
 
-      const interpolatedData = cubicSplineInterpolation(x, y);
-      setResult(interpolatedData);
-    } catch (error) {
-      alert("Formato de entrada inválido. Asegúrese de ingresar valores numéricos.");
+  function initializeMatrixAndVector(size) {
+    const newMatrixA = Array.from({ length: size }, () => Array(size).fill(""));
+    const newVectorB = Array(size).fill("");
+    setMatrixA(newMatrixA);
+    setVectorB(newVectorB);
+  }
+
+  function handleSizeChange(e) {
+    const size = parseInt(e.target.value);
+    if (size >= 2 && size <= 10) {
+      setMatrixSize(size);
+      initializeMatrixAndVector(size);
+    } else {
+      alert("Please enter a size between 2 and 10.");
     }
-  };
+  }
+
+  function handleMatrixInputChange(e, row, col) {
+    const value = e.target.value;
+    const updatedMatrix = [...matrixA];
+    updatedMatrix[row][col] = value;
+    setMatrixA(updatedMatrix);
+  }
+
+  function handleVectorInputChange(e, index) {
+    const value = e.target.value;
+    const updatedVector = [...vectorB];
+    updatedVector[index] = value;
+    setVectorB(updatedVector);
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const A = matrixA.map((row) => row.map((val) => parseFloat(val)));
+    const b = vectorB.map((val) => parseFloat(val));
+
+    if (A.some((row) => row.some((val) => isNaN(val)))) {
+      alert("Please enter valid numbers for matrix A.");
+      return;
+    }
+    if (b.some((val) => isNaN(val))) {
+      alert("Please enter valid numbers for vector b.");
+      return;
+    }
+
+    const result = trazCub(A, b);
+    if (result.error) {
+      setError(result.error);
+      setResultComponent(null);
+    } else {
+      setError(null);
+      setResultComponent(<TrazCubResult result={result} />);
+    }
+  }
 
   return (
-    <div>
-      <h2>Interpolación con Trazadores Cúbicos</h2>
+    <div className="container">
+      <h1 className="text-Method">Método de la Traza Cúbica</h1>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Puntos x:</label>
-          <input
-            type="text"
-            value={xValues}
-            onChange={(e) => setXValues(e.target.value)}
-            placeholder="Ejemplo: 0 1 2 3"
-            required
+        <div style={{ marginTop: "50px", textAlign: "center" }}>
+          <TextField
+            label="Tamaño de la matriz (n)"
+            type="number"
+            value={matrixSize}
+            onChange={handleSizeChange}
+            InputProps={{ inputProps: { min: 2, max: 10 } }}
+            style={{ width: "300px" }}
           />
         </div>
-        <div>
-          <label>Puntos y:</label>
-          <input
-            type="text"
-            value={yValues}
-            onChange={(e) => setYValues(e.target.value)}
-            placeholder="Ejemplo: 1 2 0 3"
-            required
-          />
-        </div>
-        <button type="submit">Calcular</button>
-      </form>
 
-      {result && (
-        <div>
-          <h3>Interpolación Cúbica</h3>
-          <Plot
-            data={[
-              {
-                x: result.xValues,
-                y: result.yValues,
-                type: "scatter",
-                mode: "lines",
-                name: "Interpolación",
-                line: { color: "blue" },
-              },
-              {
-                x: result.originalX,
-                y: result.originalY,
-                type: "scatter",
-                mode: "markers",
-                name: "Puntos Originales",
-                marker: { color: "red" },
-              },
-            ]}
-            layout={{
-              title: "Interpolación Cúbica",
-              xaxis: { title: "x" },
-              yaxis: { title: "f(x)" },
-            }}
-          />
+        <Typography variant="h6" gutterBottom style={{ marginTop: "20px" }}>
+          Ingrese la Matriz A:
+        </Typography>
+        <Box sx={{ overflowX: "auto" }}>
+          <Grid
+            container
+            spacing={1}
+            direction="column"
+            justifyContent="center"
+          >
+            {matrixA.map((row, rowIndex) => (
+              <Grid item key={rowIndex}>
+                <Grid container spacing={1} direction="row">
+                  {row.map((value, colIndex) => (
+                    <Grid item key={colIndex}>
+                      <TextField
+                        variant="outlined"
+                        value={value}
+                        onChange={(e) =>
+                          handleMatrixInputChange(e, rowIndex, colIndex)
+                        }
+                        style={{ width: "80px" }}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+
+        <Typography variant="h6" gutterBottom style={{ marginTop: "20px" }}>
+          Ingrese el Vector b:
+        </Typography>
+        <Box sx={{ overflowX: "auto" }}>
+          <Grid container spacing={1} direction="column" alignItems="center">
+            {vectorB.map((value, index) => (
+              <Grid item key={index}>
+                <TextField
+                  variant="outlined"
+                  value={value}
+                  onChange={(e) => handleVectorInputChange(e, index)}
+                  style={{ width: "80px" }}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+
+        <div style={{ textAlign: "center", marginTop: "30px" }}>
+          <Button
+            type="submit"
+            variant="contained"
+            disableElevation
+            style={{ backgroundColor: "#2a9d8f", color: "#fff" }}
+          >
+            Calcular
+          </Button>
+        </div>
+      </form>
+      {error && (
+        <Alert severity="error" style={{ marginTop: "20px" }}>
+          {error}
+        </Alert>
+      )}
+      {resultComponent && (
+        <div className="result-container" style={{ marginTop: "40px" }}>
+          {resultComponent}
         </div>
       )}
     </div>
   );
 }
 
-function parseValues(input: string): number[] {
-  return input
-    .trim()
-    .split(" ")
-    .map((value) => parseFloat(value));
+function TrazCubResult({ result }) {
+  return (
+    <div>
+      <Typography variant="h4" gutterBottom>
+        Vector Solución x:
+      </Typography>
+      <ul>
+        {result.x.map((value, index) => (
+          <li key={index}>
+            <Typography variant="body1">
+              x<sub>{index + 1}</sub> = {value.toFixed(6)}
+            </Typography>
+          </li>
+        ))}
+      </ul>
+
+      <Typography variant="h4" gutterBottom style={{ marginTop: "30px" }}>
+        Pasos:
+      </Typography>
+      {result.steps.map((step, index) => (
+        <Accordion key={index} style={{ backgroundColor: "#f1f1f1" }}>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls={`panel${index}-content`}
+            id={`panel${index}-header`}
+          >
+            <Typography variant="h6">{step.title}</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <pre style={{ whiteSpace: "pre-wrap" }}>{step.description}</pre>
+          </AccordionDetails>
+        </Accordion>
+      ))}
+
+      <Typography variant="h4" gutterBottom style={{ marginTop: "30px" }}>
+        Gráfico de Variables:
+      </Typography>
+      <Plot
+        data={[
+          {
+            x: result.x.map((_, index) => `x${index + 1}`),
+            y: result.x,
+            type: "bar",
+            name: "Valores de las Variables",
+            marker: { color: "blue" },
+          },
+        ]}
+        layout={{
+          title: "Valores Resultantes de las Variables",
+          xaxis: { title: "Variables" },
+          yaxis: { title: "Valor" },
+        }}
+      />
+    </div>
+  );
 }
 
-// Implementación de la interpolación cúbica
-function cubicSplineInterpolation(x: number[], y: number[]) {
-  const n = x.length;
-  const h: number[] = [];
-  const alpha: number[] = [];
-  const l: number[] = Array(n).fill(1);
-  const mu: number[] = Array(n).fill(0);
-  const z: number[] = Array(n).fill(0);
+function trazCub(A, b) {
+  const n = A.length;
+  const steps = [];
+  let augmentedMatrix = A.map((row, i) => [...row, b[i]]);
 
-  // Paso 1: Calcular las diferencias h, alpha
-  for (let i = 1; i < n; i++) {
-    h[i] = x[i] - x[i - 1];
-    alpha[i] = (3 / h[i]) * (y[i] - y[i - 1]) - (3 / h[i - 1]) * (y[i - 1] - y[i - 2]);
-  }
-
-  // Paso 2: Resolver el sistema tridiagonal
-  for (let i = 1; i < n - 1; i++) {
-    l[i] = 2 * (x[i + 1] - x[i - 1]) - h[i - 1] * mu[i - 1];
-    mu[i] = h[i] / l[i];
-    z[i] = (alpha[i] - h[i - 1] * z[i - 1]) / l[i];
-  }
-
-  l[n - 1] = 1;
-  z[n - 1] = 0;
-  const c: number[] = Array(n).fill(0);
-  const b: number[] = Array(n).fill(0);
-  const d: number[] = Array(n).fill(0);
-
-  // Paso 3: Calcular c, b, d
-  for (let j = n - 2; j >= 0; j--) {
-    c[j] = z[j] - mu[j] * c[j + 1];
-    b[j] = (y[j + 1] - y[j]) / h[j] - h[j] * (c[j + 1] + 2 * c[j]) / 3;
-    d[j] = (c[j + 1] - c[j]) / (3 * h[j]);
-  }
-
-  const spline = {
-    xValues: [],
-    yValues: [],
-    originalX: x,
-    originalY: y,
-  };
-
-  // Generar los valores interpolados
-  for (let i = 0; i < n - 1; i++) {
-    for (let t = x[i]; t <= x[i + 1]; t += (x[i + 1] - x[i]) / 100) {
-      const deltaX = t - x[i];
-      spline.xValues.push(t);
-      spline.yValues.push(
-        y[i] +
-          b[i] * deltaX +
-          c[i] * Math.pow(deltaX, 2) +
-          d[i] * Math.pow(deltaX, 3)
-      );
+  for (let k = 0; k < n - 1; k++) {
+    let pivotRow = k;
+    for (let i = k + 1; i < n; i++) {
+      if (Math.abs(augmentedMatrix[i][k]) > Math.abs(augmentedMatrix[pivotRow][k])) {
+        pivotRow = i;
+      }
     }
+
+    if (augmentedMatrix[pivotRow][k] === 0) {
+      return {
+        error: `Matriz singular, no se puede continuar.`,
+        steps,
+      };
+    }
+
+    if (pivotRow !== k) {
+      [augmentedMatrix[k], augmentedMatrix[pivotRow]] = [
+        augmentedMatrix[pivotRow],
+        augmentedMatrix[k],
+      ];
+    }
+
+    for (let i = k + 1; i < n; i++) {
+      const factor = augmentedMatrix[i][k] / augmentedMatrix[k][k];
+      for (let j = k; j <= n; j++) {
+        augmentedMatrix[i][j] -= factor * augmentedMatrix[k][j];
+      }
+    }
+
+    steps.push({
+      title: `Paso de Eliminación ${k + 1}`,
+      description: `Matriz aumentada después del paso ${k + 1}:
+${augmentedMatrixToString(augmentedMatrix)}`,
+    });
   }
 
-  return spline;
+  const x = Array(n).fill(0);
+  for (let i = n - 1; i >= 0; i--) {
+    let sum = 0;
+    for (let j = i + 1; j < n; j++) {
+      sum += augmentedMatrix[i][j] * x[j];
+    }
+    x[i] = (augmentedMatrix[i][n] - sum) / augmentedMatrix[i][i];
+  }
+
+  return {
+    x,
+    steps,
+  };
+}
+
+function augmentedMatrixToString(matrix) {
+  return matrix
+    .map((row) => row.map((value) => value.toFixed(6)).join("  "))
+    .join("\n");
 }

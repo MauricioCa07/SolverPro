@@ -12,10 +12,8 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Navbar from "../../../components/Navbar";
-import { create, all } from "mathjs";
 import Plot from "react-plotly.js";
-
-const math = create(all);
+import "./GaussianTotalPivoting.css";
 
 export function GaussianTotalPivoting_Main() {
   return (
@@ -88,7 +86,7 @@ function Form() {
       setResultComponent(null);
     } else {
       setError(null);
-      setResultComponent(<GaussMethod result={result} />);
+      setResultComponent(<GaussianMethod result={result} />);
     }
   }
 
@@ -107,16 +105,12 @@ function Form() {
           />
         </div>
 
+        {/* Matrix A Input */}
         <Typography variant="h6" gutterBottom style={{ marginTop: "20px" }}>
           Enter Matrix A:
         </Typography>
         <Box sx={{ overflowX: "auto" }}>
-          <Grid
-            container
-            spacing={1}
-            direction="column"
-            justifyContent="center"
-          >
+          <Grid container spacing={1} direction="column" justifyContent="center">
             {matrixA.map((row, rowIndex) => (
               <Grid item key={rowIndex}>
                 <Grid container spacing={1} direction="row">
@@ -125,9 +119,7 @@ function Form() {
                       <TextField
                         variant="outlined"
                         value={value}
-                        onChange={(e) =>
-                          handleMatrixInputChange(e, rowIndex, colIndex)
-                        }
+                        onChange={(e) => handleMatrixInputChange(e, rowIndex, colIndex)}
                         style={{ width: "80px" }}
                       />
                     </Grid>
@@ -138,6 +130,7 @@ function Form() {
           </Grid>
         </Box>
 
+        {/* Vector b Input */}
         <Typography variant="h6" gutterBottom style={{ marginTop: "20px" }}>
           Enter Vector b:
         </Typography>
@@ -167,6 +160,8 @@ function Form() {
           </Button>
         </div>
       </form>
+
+      {/* Error and Result Components */}
       {error && (
         <Alert severity="error" style={{ marginTop: "20px" }}>
           {error}
@@ -181,7 +176,7 @@ function Form() {
   );
 }
 
-function GaussMethod({ result }) {
+function GaussianMethod({ result }) {
   return (
     <div>
       <Typography variant="h4" gutterBottom>
@@ -241,8 +236,8 @@ function GaussMethod({ result }) {
 function gaussianTotalPivoting(A, b) {
   const n = A.length;
   const steps = [];
-  let augmentedMatrix = A.map((row, i) => [...row, b[i]]);
-  let columnSwaps = Array.from({ length: n }, (_, i) => i);
+  const augmentedMatrix = A.map((row, i) => [...row, b[i]]);
+  const columnSwaps = Array.from({ length: n }, (_, i) => i);
 
   for (let k = 0; k < n - 1; k++) {
     let maxVal = 0;
@@ -258,32 +253,21 @@ function gaussianTotalPivoting(A, b) {
       }
     }
 
-    if (maxVal < 1e-12) {
-      return {
-        error: `Matrix is numerically singular. Cannot proceed.`,
-        steps,
-      };
+    if (maxVal === 0) {
+      return { error: "Matrix is singular.", steps };
     }
 
-    if (maxRow !== k) {
-      [augmentedMatrix[k], augmentedMatrix[maxRow]] = [
-        augmentedMatrix[maxRow],
-        augmentedMatrix[k],
+    [augmentedMatrix[k], augmentedMatrix[maxRow]] = [
+      augmentedMatrix[maxRow],
+      augmentedMatrix[k],
+    ];
+    for (let i = 0; i < n; i++) {
+      [augmentedMatrix[i][k], augmentedMatrix[i][maxCol]] = [
+        augmentedMatrix[i][maxCol],
+        augmentedMatrix[i][k],
       ];
     }
-
-    if (maxCol !== k) {
-      for (let i = 0; i < n; i++) {
-        [augmentedMatrix[i][k], augmentedMatrix[i][maxCol]] = [
-          augmentedMatrix[i][maxCol],
-          augmentedMatrix[i][k],
-        ];
-      }
-      [columnSwaps[k], columnSwaps[maxCol]] = [
-        columnSwaps[maxCol],
-        columnSwaps[k],
-      ];
-    }
+    [columnSwaps[k], columnSwaps[maxCol]] = [columnSwaps[maxCol], columnSwaps[k]];
 
     for (let i = k + 1; i < n; i++) {
       const factor = augmentedMatrix[i][k] / augmentedMatrix[k][k];
@@ -293,33 +277,19 @@ function gaussianTotalPivoting(A, b) {
     }
 
     steps.push({
-      title: `Elimination Step ${k + 1}`,
-      description: `Augmented Matrix after Step ${k + 1}:
-${augmentedMatrixToString(augmentedMatrix)}
-Column Swaps: ${columnSwaps}`,
+      title: `Step ${k + 1}`,
+      description: matrixToString(augmentedMatrix),
     });
   }
 
   const x = Array(n).fill(0);
   for (let i = n - 1; i >= 0; i--) {
-    let sum = 0;
-    for (let j = i + 1; j < n; j++) {
-      sum += augmentedMatrix[i][j] * x[columnSwaps[j]];
-    }
-    x[columnSwaps[i]] = (augmentedMatrix[i][n] - sum) / augmentedMatrix[i][i];
+    x[i] = (augmentedMatrix[i][n] - augmentedMatrix[i].slice(i + 1, n).reduce((acc, val, j) => acc + val * x[i + j + 1], 0)) / augmentedMatrix[i][i];
   }
 
   return { x, steps };
 }
 
-function augmentedMatrixToString(matrix) {
-  return matrix
-    .map((row) =>
-      row
-        .map((val, idx) =>
-          idx === row.length - 1 ? `| ${val.toFixed(6)}` : val.toFixed(6)
-        )
-        .join("\t")
-    )
-    .join("\n");
+function matrixToString(matrix) {
+  return matrix.map(row => row.map(val => val.toFixed(2)).join("\t")).join("\n");
 }

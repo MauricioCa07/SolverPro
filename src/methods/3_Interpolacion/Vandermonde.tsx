@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Plot from "react-plotly.js";
 import Navbar from "../../components/Navbar";
+import './Vandermonde.css';  // Importación del archivo CSS
 
 export function Vandermonde_Main() {
   return (
@@ -11,10 +12,15 @@ export function Vandermonde_Main() {
   );
 }
 
+interface GraphData {
+  x: number[];
+  y: number[];
+}
+
 function VandermondeForm() {
   const [points, setPoints] = useState<string>(""); // Cadena para entradas de puntos
   const [coefficients, setCoefficients] = useState<number[] | null>(null); // Coeficientes del polinomio
-  const [graphData, setGraphData] = useState<{ x: number[]; y: number[] } | null>(null);
+  const [graphData, setGraphData] = useState<GraphData | null>(null); // Datos para la gráfica
 
   // Función para procesar puntos y calcular el polinomio interpolante
   const handleSubmit = (e: React.FormEvent) => {
@@ -25,7 +31,7 @@ function VandermondeForm() {
       const coef = calculateVandermonde(X, Y);
       setCoefficients(coef);
 
-      // Generar datos para graficar
+      // Generar datos para graficar el polinomio interpolante
       const graph = generateGraphData(X, coef);
       setGraphData(graph);
     } catch (error) {
@@ -34,40 +40,41 @@ function VandermondeForm() {
   };
 
   // Función para graficar el polinomio interpolante
-  const generateGraphData = (X: number[], coef: number[]) => {
+  const generateGraphData = (X: number[], coef: number[]): GraphData => {
     const xMin = Math.min(...X) - 1;
     const xMax = Math.max(...X) + 1;
-    const xValues = Array.from({ length: 100 }, (_, i) => xMin + (i * (xMax - xMin)) / 99); // 100 puntos
+    const xValues = Array.from({ length: 100 }, (_, i) => xMin + (i * (xMax - xMin)) / 99); // 100 puntos para mayor suavidad
     const yValues = xValues.map((x) => evaluatePolynomial(coef, x));
     return { x: xValues, y: yValues };
   };
 
   return (
-    <div>
-      <h2>Método de Vandermonde</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="form-container">
+      <h2 className="title">Método de Vandermonde</h2>
+      <form onSubmit={handleSubmit} className="form">
         <div>
-          <label>Ingrese los puntos (formato: x1,y1 x2,y2 ...):</label>
+          <label className="label">Ingrese los puntos (formato: x1,y1 x2,y2 ...):</label>
           <input
             type="text"
             value={points}
             onChange={(e) => setPoints(e.target.value)}
             placeholder="Ejemplo: 1,2 2,3 3,5"
             required
+            className="input"
           />
         </div>
-        <button type="submit">Calcular</button>
+        <button type="submit" className="submit-button">Calcular</button>
       </form>
 
       {coefficients && (
-        <div>
+        <div className="coefficients-section">
           <h3>Coeficientes del Polinomio:</h3>
           <pre>{JSON.stringify(coefficients, null, 2)}</pre>
         </div>
       )}
 
       {graphData && (
-        <div>
+        <div className="graph-section">
           <h3>Gráfica del Polinomio Interpolante:</h3>
           <Plot
             data={[
@@ -79,7 +86,11 @@ function VandermondeForm() {
                 marker: { color: "blue" },
               },
             ]}
-            layout={{ title: "Polinomio Interpolante", xaxis: { title: "x" }, yaxis: { title: "y" } }}
+            layout={{
+              title: "Polinomio Interpolante",
+              xaxis: { title: "x" },
+              yaxis: { title: "y" },
+            }}
           />
         </div>
       )}
@@ -107,7 +118,7 @@ function splitPoints(points: [number, number][]) {
 function calculateVandermonde(X: number[], Y: number[]): number[] {
   const n = X.length;
   const A = Array.from({ length: n }, (_, i) =>
-    Array.from({ length: n }, (_, j) => Math.pow(X[i], n - j - 1))
+    Array.from({ length: n }, (_, j) => Math.pow(X[i], n - j - 1)) // Matriz de Vandermonde
   );
   const b = Y;
   return solveLinearSystem(A, b);

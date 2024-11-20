@@ -1,0 +1,54 @@
+/* TrazCub.css */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .text-Method {
+    font-size: 2.5rem;
+    color: #2a9d8f;
+    text-align: center;
+  }
+  
+  button {
+    margin-top: 20px;
+  }
+  
+  button:hover {
+    background-color: #004d40;
+  }
+  
+  input[type="number"] {
+    width: 80px;
+  }
+  
+  .MuiTypography-root {
+    margin-bottom: 15px;
+  }
+  
+  .MuiAlert-root {
+    margin-top: 20px;
+  }
+  
+  .MuiAccordion-root {
+    margin-top: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .MuiAccordionSummary-root {
+    background-color: #f1f1f1;
+  }
+  
+  .MuiGrid-item {
+    margin-bottom: 15px;
+  }
+  .result-container {
+    margin-top: 40px;
+  }
+  
+  .error-message {
+    color: red;
+    font-weight: bold;
+  }
+    
