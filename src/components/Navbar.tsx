@@ -35,7 +35,7 @@ function Navbar() {
                   <Link to="/biseccion">Bisection</Link>
                   <Link to="/Falserule">False Rule</Link>
                   <Link to="/FixedPoint">Fixed Point</Link>
-                  <Link to="/MultipleRoots">Multiple Roots</Link>
+                  <Link to="/multiple-roots">Multiple Roots</Link>
                   <Link to="/Newton">Newton</Link>
                   <Link to="/Secant">Secant</Link>
                   <Link to="/Search">Search</Link>

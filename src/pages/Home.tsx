@@ -30,7 +30,7 @@ export function Home() {
           title="Multiple Roots"
           description="Extension of the Newton's method to handle cases with multiple or degenerate roots."
           img="assets/Raices_Multiples.jpg"
-          route="/MultipleRoots"
+          route="/multiple-roots"
         />
         <Card
           title="Newton"

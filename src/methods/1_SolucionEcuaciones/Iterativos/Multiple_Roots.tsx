@@ -1,158 +1,257 @@
-import React, { useState, useEffect } from 'react';
-import { create, all } from 'mathjs';
-import Plot from 'react-plotly.js';
-import Navbar from "../../../components/Navbar"; // Importación de Navbar
+import React, { useState, useEffect, useRef } from "react";
+import { create, all, abs, pow } from "mathjs";
+import Navbar from "../../../components/Navbar";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import functionPlot from "function-plot";
+import "./Multiple_Roots.css";
 
 const math = create(all);
 
 export function MultipleRoots_Main() {
-    return (
-        <>
-            <Navbar />
-            <MultipleRoots />
-        </>
-    );
+  return (
+    <>
+      <Navbar />
+      <MultipleRootsForm />
+    </>
+  );
 }
 
-function MultipleRoots({ funct, firstDerivate, secondDerivate, tolerancestr, iterationsstr, x0str }) {
-    const tolerance = parseFloat(tolerancestr || "0.0001");
-    const maxIterations = parseInt(iterationsstr || "100", 10);
-    const initialX0 = parseFloat(x0str || "1");
+function MultipleRootsForm() {
+  const [resultComponent, setResultComponent] = useState<JSX.Element | null>(
+    null
+  );
 
-    const f = (x) => math.evaluate(funct, { x });
-    const fPrime = (x) => math.evaluate(firstDerivate, { x });
-    const fDoublePrime = (x) => math.evaluate(secondDerivate, { x });
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const formJson = Object.fromEntries(formData.entries());
 
-    const [steps, setSteps] = useState<any[]>([]); // Almacenar los pasos
-    const [root, setRoot] = useState<number | null>(null);
-    const [error, setError] = useState<number | null>(null);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const props = {
+      func: formJson["function"] as string,
+      firstDeriv: formJson["first_derivative"] as string,
+      secondDeriv: formJson["second_derivative"] as string,
+      initialGuess: parseFloat(formJson["initial_guess"] as string),
+      tolerance: parseFloat(formJson["tolerance"] as string),
+    };
 
-    useEffect(() => {
-        const calculateMultipleRoots = () => {
-            try {
-                let X0 = initialX0;
-                let n = 0;
-                let localError = Infinity;
-                const stepsArray: any[] = [];
+    setResultComponent(<MultipleRootsMethod {...props} />);
+  }
 
-                while (localError > tolerance && n < maxIterations) {
-                    const fx0 = f(X0);
-                    const fpx0 = fPrime(X0);
-                    const fppx0 = fDoublePrime(X0);
-
-                    if (Math.abs(Math.pow(fpx0, 2) - fx0 * fppx0) < Number.EPSILON) {
-                        setErrorMessage("División por cero en la fórmula. Revisa las derivadas y la función.");
-                        return;
-                    }
-
-                    const Xn = X0 - (fx0 * fpx0) / (Math.pow(fpx0, 2) - fx0 * fppx0);
-                    localError = Math.abs(Xn - X0);
-                    stepsArray.push({
-                        step: n + 1,
-                        Xn,
-                        fx0,
-                        fpx0,
-                        fppx0,
-                        error: localError,
-                    });
-
-                    X0 = Xn;
-                    n++;
-                }
-
-                setSteps(stepsArray);
-
-                if (localError <= tolerance) {
-                    setRoot(X0);
-                    setError(localError);
-                } else {
-                    setErrorMessage("No se encontró una raíz dentro del número máximo de iteraciones.");
-                }
-            } catch (err) {
-                setErrorMessage("Error al evaluar la función. Revisa las expresiones ingresadas.");
-            }
-        };
-
-        calculateMultipleRoots();
-    }, [funct, firstDerivate, secondDerivate, tolerance, maxIterations, initialX0]);
-
-    // Preparar datos para la gráfica
-    const plotData = steps.map((step) => step.Xn);
-    const plotIterations = steps.map((step) => step.step);
-
-    return (
-        <div>
-            <Navbar /> {/* Navbar */}
-            <h2>Método de Múltiples Raíces (Newton-Raphson con segunda derivada)</h2>
-
-            {errorMessage && (
-                <div style={{ color: "red" }}>
-                    <h3>Error:</h3>
-                    <p>{errorMessage}</p>
-                </div>
-            )}
-
-            {steps.length > 0 && (
-                <div>
-                    <h3>Demostración paso a paso:</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Paso</th>
-                                <th>Raíz Aproximada (Xn)</th>
-                                <th>F(Xn)</th>
-                                <th>F'(Xn)</th>
-                                <th>F''(Xn)</th>
-                                <th>Error</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {steps.map((step, index) => (
-                                <tr key={index}>
-                                    <td>{step.step}</td>
-                                    <td>{step.Xn.toFixed(6)}</td>
-                                    <td>{step.fx0.toFixed(6)}</td>
-                                    <td>{step.fpx0.toFixed(6)}</td>
-                                    <td>{step.fppx0.toFixed(6)}</td>
-                                    <td>{step.error.toFixed(6)}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-
-            {root !== null && error !== null && (
-                <div>
-                    <h3>Resultado final:</h3>
-                    <p>
-                        La raíz aproximada es {root.toFixed(6)} con un error de {error.toFixed(6)}.
-                    </p>
-                </div>
-            )}
-
-            <div>
-                <h3>Gráfica de la evolución de la raíz en cada iteración:</h3>
-                <Plot
-                    data={[
-                        {
-                            x: plotIterations,
-                            y: plotData,
-                            type: "scatter",
-                            mode: "lines+markers",
-                            name: "Evolución de la raíz",
-                            line: { color: "blue" },
-                            marker: { color: "red" },
-                        },
-                    ]}
-                    layout={{
-                        title: "Evolución de la raíz en cada iteración",
-                        xaxis: { title: "Iteración" },
-                        yaxis: { title: "Raíz Aproximada (Xn)" },
-                    }}
-                />
-            </div>
+  return (
+    <div className="container">
+      <h1 className="text-Method">Multiple Roots Method</h1>
+      <form onSubmit={handleSubmit}>
+        <FormInput
+          label="Enter the function f(x)"
+          name="function"
+          defaultValue="x^3 - x^2 - x - 1"
+        />
+        <FormInput
+          label="Enter the first derivative f'(x)"
+          name="first_derivative"
+          defaultValue="3*x^2 - 2*x - 1"
+        />
+        <FormInput
+          label="Enter the second derivative f''(x)"
+          name="second_derivative"
+          defaultValue="6*x - 2"
+        />
+        <FormInput
+          label="Enter the initial guess"
+          name="initial_guess"
+          defaultValue="1.5"
+        />
+        <FormInput
+          label="Enter the tolerance"
+          name="tolerance"
+          defaultValue="1e-7"
+        />
+        <div className="item">
+          <Button
+            className="calculate-button"
+            type="submit"
+            variant="contained"
+            disableElevation
+          >
+            Calculate
+          </Button>
         </div>
-    );
+      </form>
+      {resultComponent && (
+        <div className="result-container">{resultComponent}</div>
+      )}
+    </div>
+  );
 }
+
+function FormInput({
+  label,
+  name,
+  type = "text",
+  defaultValue,
+}: {
+  label: string;
+  name: string;
+  type?: string;
+  defaultValue: string;
+}) {
+  return (
+    <div className="item">
+      <label className="text-field">{label}</label>
+      <br />
+      <TextField
+        type={type}
+        name={name}
+        defaultValue={defaultValue}
+        required
+        variant="standard"
+      />
+    </div>
+  );
+}
+
+function MultipleRootsMethod({
+  func,
+  firstDeriv,
+  secondDeriv,
+  initialGuess,
+  tolerance,
+}: {
+  func: string;
+  firstDeriv: string;
+  secondDeriv: string;
+  initialGuess: number;
+  tolerance: number;
+}) {
+  const [iterationsData, setIterationsData] = useState<
+    { iteration: number; xi: number; fxi: number; error: number }[]
+  >([]);
+  const [result, setResult] = useState<string | null>(null);
+  const graphRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const data: {
+      iteration: number;
+      xi: number;
+      fxi: number;
+      error: number;
+    }[] = [];
+    let xi = initialGuess;
+    let error = Infinity;
+    let iteration = 0;
+
+    while (error > tolerance && iteration < 100) {
+      const fxi = f(func, xi);
+      const fpxi = f(firstDeriv, xi);
+      const fppxi = f(secondDeriv, xi);
+
+      if (pow(fpxi, 2) - fxi * fppxi === 0) {
+        alert("Error: Division by zero in the iteration process.");
+        break;
+      }
+
+      const nextXi = xi - (fxi * fpxi) / (pow(fpxi, 2) - fxi * fppxi);
+      error = abs(nextXi - xi);
+
+      data.push({
+        iteration: iteration + 1,
+        xi,
+        fxi,
+        error,
+      });
+
+      xi = nextXi;
+      iteration++;
+    }
+
+    if (iteration >= 100) {
+      setResult("Max iterations reached. No root found.");
+    } else if (!result) {
+      setResult(
+        `Approximation: x = ${math.format(xi, {
+          precision: 10,
+        })}, Error: ${error}`
+      );
+    }
+
+    setIterationsData(data);
+    plotFunction(func, initialGuess);
+  }, [func, firstDeriv, secondDeriv, initialGuess, tolerance]);
+
+  const plotFunction = (func: string, xStart: number) => {
+    if (graphRef.current) {
+      graphRef.current.innerHTML = ""; // Clear previous graph
+
+      const width = 800;
+      const height = 400;
+      const xDomain = [xStart - 5, xStart + 5];
+
+      try {
+        functionPlot({
+          target: graphRef.current,
+          width,
+          height,
+          xAxis: { domain: xDomain },
+          yAxis: { label: "f(x)" },
+          grid: true,
+          data: [
+            {
+              fn: func,
+              color: "blue",
+            },
+          ],
+        });
+      } catch (err) {
+        console.error("Error plotting the function: ", err);
+      }
+    }
+  };
+
+  return (
+    <div>
+      <h2>{result}</h2>
+      <IterationTable iterations={iterationsData} />
+      <div ref={graphRef} className="graph-container"></div>
+    </div>
+  );
+}
+
+function IterationTable({
+  iterations,
+}: {
+  iterations: { iteration: number; xi: number; fxi: number; error: number }[];
+}) {
+  return (
+    <table className="table-dark">
+      <thead>
+        <tr>
+          <th>Iteration</th>
+          <th>xi</th>
+          <th>f(xi)</th>
+          <th>Error</th>
+        </tr>
+      </thead>
+      <tbody>
+        {iterations.map((row, index) => (
+          <tr key={index}>
+            <td>{row.iteration}</td>
+            <td>{row.xi.toFixed(6)}</td>
+            <td>{row.fxi.toExponential(4)}</td>
+            <td>{row.error.toExponential(4)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+function f(func: string, x: number): number {
+  try {
+    return math.evaluate(func, { x });
+  } catch {
+    return NaN;
+  }
+}
+
+export default MultipleRoots_Main;
