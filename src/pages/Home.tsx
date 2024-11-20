@@ -133,6 +133,7 @@ export function Home() {
           title="Euler"
           description="Simple step method to approximate solutions of ordinary differential equations."
           img="assets/Euler.jpg"
+          route="/Euler"
         />
       </div>
     </>
