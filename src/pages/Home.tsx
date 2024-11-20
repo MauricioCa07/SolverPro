@@ -124,6 +124,7 @@ export function Home() {
           title="Simpson"
           description="Numerical method to calculate integrals by approximating the function with quadratic polynomials."
           img="assets/Simpson.jpg"
+          route="/Simpson"
         />
       </div>
 
